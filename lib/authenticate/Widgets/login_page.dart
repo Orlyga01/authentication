@@ -147,9 +147,11 @@ class LoginPage extends StatelessWidget {
                                 loginInfo: _logininfo,
                               ),
                               const SizedBox(height: 20.0),
-                              registerMode ?
-                              _SignUpButton(_logininfo, _formKey, _context):
-                              _LoginButton(_logininfo, _formKey, _context),
+                              registerMode
+                                  ? _SignUpButton(
+                                      _logininfo, _formKey, _context)
+                                  : _LoginButton(
+                                      _logininfo, _formKey, _context),
                               SizedBox(height: 20.0),
                               Divider(),
                               SizedBox(height: 20.0),
@@ -210,16 +212,12 @@ class _LoginButton extends StatelessWidget {
   }
 }
 
-
-
 class _SignUpButton extends StatelessWidget {
-   final LoginInfo? loginInfo;
+  final LoginInfo? loginInfo;
   final GlobalKey<FormState> _formKey;
   final BuildContext externalContext;
 
-  const _SignUpButton(  this.loginInfo,
-    this._formKey,
-    this.externalContext);
+  const _SignUpButton(this.loginInfo, this._formKey, this.externalContext);
 
   @override
   Widget build(BuildContext context) {
@@ -250,6 +248,5 @@ class _SignUpButton extends StatelessWidget {
             }
           },
         ));
-  }
   }
 }
