@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:authentication/shared/auth_constants.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/authenticate/providers/import_auth.dart';
@@ -37,11 +36,12 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     state = AfterSuccessfulLogin();
   }
 
-  Future<void> login(LoginInfo logininfo) async {
+  Future<void> login(LoginInfo logininfo, [bool fromRegister = false]) async {
     state = AuthenticationInProgress();
     logininfo.externalLogin = false;
     await UserLocalStorage().setLoginData(logininfo);
-    state = await AuthenticationController().checkCredentials(logininfo);
+    state = await AuthenticationController()
+        .checkCredentials(logininfo, fromRegister);
   }
 
   Future<void> GoogleLogin() async {
@@ -73,12 +73,15 @@ class AuthenticationController {
     return _groupC;
   }
 
-  Future<AuthenticationState> checkCredentials(LoginInfo logininfo) async {
-    String userid;
-
+  Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
+      [bool fromRegister = false]) async {
+    UserCredential? userc;
+    //That means
     try {
-      UserCredential? userc =
-          await _authRepository.logInWithEmailAndPassword(logininfo);
+      if (fromRegister)
+        userc = await _authRepository.signUp(logininfo);
+      else
+        userc = await _authRepository.logInWithEmailAndPassword(logininfo);
       logininfo.uid = userc!.user!.uid;
       //If its the same user as before login
       if (isDifferentLoginUser(userc))

@@ -38,11 +38,11 @@ class FirebaseAuthRepository {
   ///
   /// Throws a [SignUpFailure] if an exception occurs.
 
-  Future<UserCredential> signUp(RegisterInfo info) async {
+  Future<UserCredential> signUp(LoginInfo info) async {
     try {
       return _firebaseAuth.createUserWithEmailAndPassword(
-        email: info.loginInfo!.email!,
-        password: info.loginInfo!.password!,
+        email: info.email!,
+        password: info.password!,
       );
     } on FirebaseAuthException catch (e) {
       throw firebaseAuthExceptionConvertToReadableError(e);

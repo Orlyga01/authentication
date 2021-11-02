@@ -14,12 +14,13 @@ import 'login_form.dart';
 class LoginPage extends StatelessWidget {
   final Map<String, dynamic>? moreInfo;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  bool registerMode;
   final Widget? logoWidget;
   LoginPage({
     Key? key,
     this.logoWidget,
     this.moreInfo,
+    this.registerMode = false,
   }) : super(key: key);
   late BuildContext _context;
 
@@ -89,17 +90,6 @@ class LoginPage extends StatelessWidget {
                         });
                       }
                       return SizedBox.shrink();
-                    } else if (state is UserMissingInfo) {
-                      // Timer.run(() {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (mcontext) => MissingUserInfo(
-                      //       user: state.user,
-                      //       formKey: _muserformKey,
-                      //     ),
-                      //   );
-                      // });
-                      return SizedBox.shrink();
                     } else {
                       return SizedBox.shrink();
                     }
@@ -133,9 +123,23 @@ class LoginPage extends StatelessWidget {
                               )),
                               SizedBox(height: 20.0),
                               Divider(),
+                              if (registerMode)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                  child: TextButton(
+                                    child: Text(("Already have an account?"),
+                                        style: TextStyle(
+                                            //   color: BeStyle.darkermain,
+                                            )),
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, "login");
+                                    },
+                                  ),
+                                ),
                               SizedBox(height: 20.0),
                               UserForm(
-                                //   formKey: _userformKey,
+                                fromRegister: registerMode,
                                 user: AuthUser(
                                     id: _logininfo.uid ?? "",
                                     email: _logininfo.email,
@@ -143,6 +147,8 @@ class LoginPage extends StatelessWidget {
                                 loginInfo: _logininfo,
                               ),
                               const SizedBox(height: 20.0),
+                              registerMode ?
+                              _SignUpButton(_logininfo, _formKey, _context),
                               _LoginButton(_logininfo, _formKey, _context),
                               SizedBox(height: 20.0),
                               Divider(),
@@ -205,21 +211,46 @@ class _LoginButton extends StatelessWidget {
   }
 }
 
+
+
 class _SignUpButton extends StatelessWidget {
+   final LoginInfo? loginInfo;
+  final GlobalKey<FormState> _formKey;
+  final BuildContext externalContext;
+
+  const _SignUpButton(  this.loginInfo,
+    this._formKey,
+    this.externalContext);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      child: OutlinedButton(
-          key: const Key('loginForm_createAccount_flatButton'),
-          child: Text('Register'),
-          onPressed: () async {
-            //  String? thisphone = DeviceServices().myPhone;
-            Navigator.pushNamed(
-              context,
-              "register",
-            );
-          }),
-    );
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: ElevatedButton(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Register",
+              ),
+              SizedBox(width: 10),
+              Consumer(builder: (context, ScopedReader watch, child) {
+                final state = watch(authNotifierProviderForUser);
+                if (state is AuthenticationInProgress)
+                  return CircularProgressIndicator();
+                else
+                  return SizedBox.shrink();
+              }),
+            ],
+          ),
+          onPressed: () {
+            if (_formKey.currentState!.validate() && loginInfo != null) {
+              externalContext
+                  .read(authNotifierProviderForUser.notifier)
+                  .login(loginInfo!, true);
+            }
+          },
+        ));
+  }
   }
 }
