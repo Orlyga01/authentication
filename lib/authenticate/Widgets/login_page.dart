@@ -148,12 +148,11 @@ class LoginPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 20.0),
                               registerMode ?
-                              _SignUpButton(_logininfo, _formKey, _context),
+                              _SignUpButton(_logininfo, _formKey, _context):
                               _LoginButton(_logininfo, _formKey, _context),
                               SizedBox(height: 20.0),
                               Divider(),
                               SizedBox(height: 20.0),
-                              _SignUpButton(),
                             ],
                           ),
                         ),
