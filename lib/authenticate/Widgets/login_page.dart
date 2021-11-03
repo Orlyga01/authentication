@@ -249,4 +249,4 @@ class _SignUpButton extends StatelessWidget {
           },
         ));
   }
-}
+} // stam
