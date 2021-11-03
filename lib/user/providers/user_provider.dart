@@ -52,6 +52,8 @@ class UserNotifier extends StateNotifier<UserState> {
       os.read(authNotifierProviderForUser.notifier).appStarted();
     } else if (authState is NeedToLogin) {
       state = UserNeedsToLogin(authState.loginInfo, null);
+    } else if (authState is NeedToRegister) {
+      state = UserNeedsToRegister();
     } else if (authState is Authenticated) {
       setUserAfterAuthentication(authState.user);
     } else if (authState is Unauthenticated) {
@@ -168,7 +170,9 @@ class UserController {
         if (user.isInfoMissing) return UserMissingInfo(user);
         _isLoggedIn = true;
 
-        return UserLoaded(user,);
+        return UserLoaded(
+          user,
+        );
       }
     } catch (e) {
       return UserError(e.toString());
