@@ -130,6 +130,30 @@ class _UserFormState extends State<UserForm> {
                     return null;
                   }),
             ),
+          if (widget.loginInfo != null && widget.fromRegister)
+            TextFormField(
+                initialValue: widget.loginInfo!.confirmedPassword,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: ("Confirm Password"),
+                  // prefixIcon:
+                  //     Icon(Icons.star_rate, size: 10, color: Colors.red),
+                  // prefixIconConstraints: BoxConstraints(
+                  //   maxWidth: 10,
+                  // ),
+                ),
+                onChanged: (String inputString) {
+                  widget.loginInfo!.confirmedPassword = inputString;
+                },
+                validator: (value) {
+                  if (widget.loginInfo!.confirmPasswordpasswordValidator(value) ==
+                      '') {
+                    widget.loginInfo!.confirmedPassword = value;
+                  } else {
+                    return ("Password") + " " + ("doesn't match");
+                  }
+                  return null;
+                }),
           if (!widget.fromRegister && widget.loginInfo != null)
             Container(
               padding: EdgeInsets.only(top: 20),

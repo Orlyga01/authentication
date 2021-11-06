@@ -8,6 +8,8 @@ class LoginInfo {
   String? uid;
   bool? externalLogin;
   bool? loggedOut;
+  String? confirmedPassword;
+
   String? role; //superAdmin, admin
   LoginInfo(
       {this.email,
@@ -59,6 +61,10 @@ class LoginInfo {
 
   static get empty {
     return LoginInfo();
+  }
+
+  String confirmPasswordpasswordValidator(String? value) {
+    return (value == password) ? '' : ("Passwords don't match"); //
   }
 
   get isFromExternalLogin {

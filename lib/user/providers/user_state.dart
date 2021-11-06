@@ -24,7 +24,11 @@ class SetUserAfterAuthentication extends UserState {
 
 class UserLoading extends UserState {}
 
-class UserNeedsToRegister extends UserState {}
+class UserNeedsToRegister extends UserState {
+  LoginInfo? loginInfo;
+  String? err;
+  UserNeedsToRegister(this.loginInfo, this.err);
+}
 
 class UserNeedsToLogin extends UserState {
   LoginInfo? loginInfo;

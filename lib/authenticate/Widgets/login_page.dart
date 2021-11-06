@@ -62,11 +62,14 @@ class LoginPage extends StatelessWidget {
                   Consumer(builder: (context, listen, child) {
                     var state = listen(userNotifier);
 
-                    if (state is UserNeedsToRegister) {
-                      Navigator.pushNamed(
-                        _context,
-                        "register",
-                      );
+                    if (state is UserNeedsToRegister && !registerMode) {
+                      Timer.run(() {
+                        Navigator.pushReplacementNamed(
+                          _context,
+                          "register",
+                        );
+                      });
+
                       return SizedBox.shrink();
                     } else if (state is UserNeedsToLogin) {
                       _logininfo = state.loginInfo ?? _logininfo;
