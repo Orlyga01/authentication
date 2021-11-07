@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:authentication/authentication.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/authenticate/providers/import_auth.dart';
@@ -73,7 +74,7 @@ class AuthenticationController {
     return _groupC;
   }
 
-  Future<AuthenticationState> checkCredentials(LoginInfo logininfo, 
+  Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
       [bool fromRegister = false]) async {
     UserCredential? userc;
     //That means

@@ -28,6 +28,11 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _context = context;
     LoginInfo _logininfo = AuthenticationController().getLoginInfoFromLocal();
+    AuthUser _loginUser = AuthUser(
+        id: _logininfo.uid ?? "",
+        email: _logininfo.email,
+        phone: _logininfo.phone);
+    _logininfo.user = _loginUser;
     if (moreInfo != null && moreInfo!["missingInfo"] == true) {
       Timer.run(() {
         showDialog(
@@ -164,17 +169,11 @@ class LoginPage extends StatelessWidget {
                                 ),
                               SizedBox(height: 20.0),
                               UserForm(
-                                fromRegister: registerMode,
-                                user: AuthUser(
-                                    id: _logininfo.uid ?? "",
-                                    email: _logininfo.email,
-                                    phone: _logininfo.phone),
-                                loginInfo: _logininfo,
-                              ),
+                                  fromRegister: registerMode, user: _logininfo.user!),
                               const SizedBox(height: 20.0),
                               registerMode
-                                  ? _SignUpButton(
-                                      _logininfo, _formKey, _context)
+                                  ? _SignUpButton(_logininfo,
+                                      _formKey, _context)
                                   : _LoginButton(
                                       _logininfo, _formKey, _context),
                               SizedBox(height: 20.0),
@@ -242,7 +241,8 @@ class _SignUpButton extends StatelessWidget {
   final GlobalKey<FormState> _formKey;
   final BuildContext externalContext;
 
-  const _SignUpButton(this.loginInfo, this._formKey, this.externalContext);
+  const _SignUpButton(
+      this.loginInfo, this._formKey, this.externalContext);
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +269,7 @@ class _SignUpButton extends StatelessWidget {
             if (_formKey.currentState!.validate() && loginInfo != null) {
               externalContext
                   .read(authNotifierProviderForUser.notifier)
-                  .login(loginInfo!, true);
+                  .login(loginInfo!, true, loginUser);
             }
           },
         ));
