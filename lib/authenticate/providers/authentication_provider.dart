@@ -20,7 +20,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       logininfo = UserLocalStorage().getLoginData();
 
       if (logininfo.uid == null || logininfo.loggedOut == null) {
-        state = NeedToRegister();
+        state = NeedToRegister(null);
         return;
       } else if (logininfo.loggedOut!) {
         state = NeedToLogin(logininfo);
@@ -73,7 +73,7 @@ class AuthenticationController {
     return _groupC;
   }
 
-  Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
+  Future<AuthenticationState> checkCredentials(LoginInfo logininfo, 
       [bool fromRegister = false]) async {
     UserCredential? userc;
     //That means

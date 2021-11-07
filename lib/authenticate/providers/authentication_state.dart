@@ -117,13 +117,16 @@ class Unauthenticated extends AuthenticationState {
 
 class NeedToLogin extends AuthenticationState {
   LoginInfo? loginInfo;
-  NeedToLogin(this.loginInfo);
+  String? err;
+  NeedToLogin(this.loginInfo, [this.err]);
   @override
   String toString() => 'NeedToLogin ';
 }
 
 class NeedToRegister extends AuthenticationState {
-  NeedToRegister();
+  LoginInfo? loginInfo;
+  String? err;
+  NeedToRegister(this.loginInfo, [this.err]);
 }
 
 class SignUpInProgress extends AuthenticationState {}

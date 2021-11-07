@@ -146,7 +146,8 @@ class _UserFormState extends State<UserForm> {
                   widget.loginInfo!.confirmedPassword = inputString;
                 },
                 validator: (value) {
-                  if (widget.loginInfo!.confirmPasswordpasswordValidator(value) ==
+                  if (widget.loginInfo!
+                          .confirmPasswordpasswordValidator(value) ==
                       '') {
                     widget.loginInfo!.confirmedPassword = value;
                   } else {

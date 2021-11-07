@@ -62,14 +62,36 @@ class LoginPage extends StatelessWidget {
                   Consumer(builder: (context, listen, child) {
                     var state = listen(userNotifier);
 
-                    if (state is UserNeedsToRegister && !registerMode) {
-                      Timer.run(() {
-                        Navigator.pushReplacementNamed(
-                          _context,
-                          "register",
-                        );
-                      });
-
+                    if (state is UserNeedsToRegister) {
+                      if (!registerMode) {
+                        Timer.run(() {
+                          Navigator.pushReplacementNamed(
+                            _context,
+                            "register",
+                          );
+                        });
+                      } else {
+                        _logininfo = state.loginInfo ?? _logininfo;
+                        if (!isEmpty(state.err)) {
+                          Timer.run(() {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: Text("Login error"),
+                                content: Text(state.err!),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => {
+                                      Navigator.pop(context),
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                        }
+                      }
                       return SizedBox.shrink();
                     } else if (state is UserNeedsToLogin) {
                       _logininfo = state.loginInfo ?? _logininfo;
