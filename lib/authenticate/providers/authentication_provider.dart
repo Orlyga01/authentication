@@ -90,7 +90,7 @@ class AuthenticationController {
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
       await UserLocalStorage().setKeyValue("loggedOut", "false");
       log("after credentials success");
-      return Authenticated(userc.user!);
+      return Authenticated(userc.user!, logininfo);
     } catch (e) {
       return Unauthenticated(e.toString(), logininfo);
     }

@@ -55,7 +55,7 @@ class UserNotifier extends StateNotifier<UserState> {
     } else if (authState is NeedToRegister) {
       state = UserNeedsToRegister(authState.loginInfo, authState.err);
     } else if (authState is Authenticated) {
-      setUserAfterAuthentication(authState.user);
+      setUserAfterAuthentication(authState.user, authState.loginInfo);
     } else if (authState is Unauthenticated) {
       if (!isEmpty(authState.logininfo.confirmedPassword))
         state = UserNeedsToRegister(authState.logininfo, authState.err);
