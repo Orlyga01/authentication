@@ -170,6 +170,7 @@ class LoginPage extends StatelessWidget {
                               SizedBox(height: 20.0),
                               UserForm(
                                   fromRegister: registerMode,
+                                  loginInfo: _logininfo,
                                   user: _logininfo.user!),
                               const SizedBox(height: 20.0),
                               registerMode
