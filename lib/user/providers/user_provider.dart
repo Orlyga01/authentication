@@ -69,10 +69,10 @@ class UserNotifier extends StateNotifier<UserState> {
     return (lo == '' || lo == "true");
   }
 
-  setUserAfterAuthentication(User muser) async {
+  setUserAfterAuthentication(User muser, LoginInfo? logininfo) async {
     try {
       UserState newState =
-          await UserController().setUserAfterAuthentication(muser);
+          await UserController().setUserAfterAuthentication(muser, logininfo);
       state = newState;
       var _habits = state;
       // _habits = UserLoaded(user);
@@ -145,17 +145,25 @@ class UserController {
     if (foundUser != null && foundUser.id != userid) return foundUser;
   }
 
-  Future<UserState> setUserAfterAuthentication(User authUser) async {
+  Future<UserState> setUserAfterAuthentication(
+      User authUser, LoginInfo? loginInfo) async {
     try {
       AuthUser? user = await UserController().getUserById(authUser.uid);
       //This is a new user - and we need to get him into the system
       //However, it might be that the user's information
       AuthUser newUser = AuthUser(
         id: authUser.uid,
-        email: authUser.email,
-        phone: authUser.phoneNumber,
-        image: authUser.photoURL,
-        displayName: authUser.displayName,
+        email:
+            isEmpty(authUser.email) ? loginInfo?.user?.email : authUser.email,
+        phone: isEmpty(authUser.phoneNumber)
+            ? loginInfo?.user?.phone
+            : authUser.phoneNumber,
+        image: isEmpty(loginInfo?.user?.image)
+            ? authUser.photoURL
+            : loginInfo?.user?.image,
+        displayName: isEmpty(loginInfo?.user?.displayName)
+            ? authUser.displayName
+            : loginInfo?.user?.displayName,
       );
       if (user == null) {
         try {

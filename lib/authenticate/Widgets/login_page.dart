@@ -7,6 +7,7 @@ import 'package:authentication/user/Widgets/missing_info.dart';
 import 'package:authentication/user/providers/user_provider.dart';
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/authentication.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'login_form.dart';
@@ -154,39 +155,58 @@ class LoginPage extends StatelessWidget {
                               SizedBox(height: 20.0),
                               Divider(),
                               if (!registerMode)
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      child: Text("Don't have an account yet?"),
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
-                                        Navigator.pushNamed(
-                                          context,
-                                          "register",
-                                        );
-                                      },
-                                      child: Text("Lets crate an new account"),
-                                    )
-                                  ],
-                                ),
-                              if (registerMode)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 20),
-                                  child: TextButton(
-                                    child: Text(("Already have an account?"),
-                                        style: TextStyle(
-                                            //   color: BeStyle.darkermain,
-                                            )),
-                                    onPressed: () {
-                                      Navigator.pushNamed(context, "login");
-                                    },
+                                new RichText(
+                                  text: new TextSpan(
+                                    children: [
+                                      new TextSpan(
+                                        text: 'Don\'t have an account yet?',
+                                        style:
+                                            new TextStyle(color: Colors.black),
+                                      ),
+                                      new TextSpan(
+                                        text: 'Lets create one',
+                                        style:
+                                            new TextStyle(color: Colors.blue),
+                                        recognizer: new TapGestureRecognizer()
+                                          ..onTap = () async {
+                                            Navigator.pushReplacementNamed(
+                                              context,
+                                              "register",
+                                            );
+                                          },
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              SizedBox(height: 20.0),
+                              // Row(
+                              //   children: [
+                              //     Padding(
+                              //       padding: const EdgeInsets.symmetric(
+                              //           horizontal: 5),
+                              //       child: Text("Don't have an account yet?"),
+                              //     ),
+                              //     InkWell(
+                              //       onTap: () async {
+                              //         Navigator.pushNamed(
+                              //           context,
+                              //           "register",
+                              //         );
+                              //       },
+                              //       child: Text("Lets crate a new account", style: (color: )),
+                              //     )
+                              //   ],
+                              // ),
+                              if (registerMode)
+                                TextButton(
+                                  child: Text(("Already have an account?"),
+                                      style: TextStyle(
+                                          //   color: BeStyle.darkermain,
+                                          )),
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, "login");
+                                  },
+                                ),
+                              SizedBox(height: 10.0),
                               UserForm(
                                   fromRegister: registerMode,
                                   loginInfo: _logininfo,
