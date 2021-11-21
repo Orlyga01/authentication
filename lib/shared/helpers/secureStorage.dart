@@ -76,9 +76,9 @@ class UserLocalStorage {
       );
       loginInfo.externalLogin = _storage.getString("externalLogin") == "true";
 
-      String loggedOUt = _storage.getString(
+      String? loggedOUt = _storage.getString(
         "loggedOut",
-      )!;
+      );
       if (loggedOUt != null) {
         loginInfo.loggedOut = loggedOUt == "true";
       }
