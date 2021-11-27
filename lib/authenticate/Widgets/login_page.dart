@@ -159,7 +159,7 @@ class LoginPage extends StatelessWidget {
                                   text: new TextSpan(
                                     children: [
                                       new TextSpan(
-                                        text: 'Don\'t have an account yet?',
+                                        text: 'Don\'t have an account yet? ',
                                         style:
                                             new TextStyle(color: Colors.black),
                                       ),
