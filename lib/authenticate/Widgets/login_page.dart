@@ -31,6 +31,7 @@ class LoginPage extends StatelessWidget {
     LoginInfo _logininfo = AuthenticationController().getLoginInfoFromLocal();
     AuthUser _loginUser = AuthUser(
         id: _logininfo.uid ?? "",
+        displayName: _logininfo.name,
         email: _logininfo.email,
         phone: _logininfo.phone);
     _logininfo.user = _loginUser;
