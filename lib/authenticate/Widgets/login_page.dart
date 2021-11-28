@@ -209,9 +209,7 @@ class LoginPage extends StatelessWidget {
                                           )),
                                   onPressed: () {
                                     Navigator.pushNamed(context, "login",
-                                        arguments: {
-                                          "registrationMode": "false"
-                                        });
+                                        arguments: {"registerMode": false});
                                   },
                                 ),
                               SizedBox(height: 10.0),
