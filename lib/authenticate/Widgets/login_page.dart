@@ -15,18 +15,21 @@ import 'login_form.dart';
 class LoginPage extends StatelessWidget {
   final Map<String, dynamic>? moreInfo;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool registerMode;
+  bool? registerMode;
   final Widget? logoWidget;
   LoginPage({
     Key? key,
     this.logoWidget,
     this.moreInfo,
-    this.registerMode = false,
+    this.registerMode,
   }) : super(key: key);
   late BuildContext _context;
 
   @override
   Widget build(BuildContext context) {
+    if (moreInfo != null && moreInfo?["registerMode"] == false) {
+      registerMode = false;
+    }
     _context = context;
     LoginInfo _logininfo = AuthenticationController().getLoginInfoFromLocal();
     AuthUser _loginUser = AuthUser(
@@ -70,7 +73,8 @@ class LoginPage extends StatelessWidget {
                     var state = listen(userNotifier);
 
                     if (state is UserNeedsToRegister) {
-                      if (!registerMode) {
+                      //if regsiterMode = true, then we are already in the register page, and if the registerMode is false, that means that we force to continue even though the local storage is empty
+                      if (registerMode == null) {
                         Timer.run(() {
                           Navigator.pushReplacementNamed(
                             _context,
@@ -155,7 +159,7 @@ class LoginPage extends StatelessWidget {
                               )),
                               SizedBox(height: 20.0),
                               Divider(),
-                              if (!registerMode)
+                              if (registerMode != true)
                                 new RichText(
                                   text: new TextSpan(
                                     children: [
@@ -197,23 +201,26 @@ class LoginPage extends StatelessWidget {
                               //     )
                               //   ],
                               // ),
-                              if (registerMode)
+                              if (registerMode == true)
                                 TextButton(
                                   child: Text(("Already have an account?"),
                                       style: TextStyle(
                                           //   color: BeStyle.darkermain,
                                           )),
                                   onPressed: () {
-                                    Navigator.pushNamed(context, "login");
+                                    Navigator.pushNamed(context, "login",
+                                        arguments: {
+                                          "registrationMode": "false"
+                                        });
                                   },
                                 ),
                               SizedBox(height: 10.0),
                               UserForm(
-                                  fromRegister: registerMode,
+                                  fromRegister: registerMode ?? false,
                                   loginInfo: _logininfo,
                                   user: _logininfo.user!),
                               const SizedBox(height: 20.0),
-                              registerMode
+                              registerMode == true
                                   ? _SignUpButton(
                                       _logininfo, _formKey, _context)
                                   : _LoginButton(
