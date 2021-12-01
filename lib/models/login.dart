@@ -6,15 +6,20 @@ class LoginInfo {
   String? password;
   String? phone;
   String? uid;
+  String? name;
   bool? externalLogin;
   bool? loggedOut;
-  //TODO
+  String? confirmedPassword;
+  AuthUser? user = AuthUser.empty;
+
   String? role; //superAdmin, admin
   LoginInfo(
       {this.email,
       this.password,
       this.phone,
+      this.name,
       this.externalLogin = false,
+      this.user,
       this.uid});
   static final RegExp _emailRegExp = RegExp(
     r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
@@ -26,8 +31,15 @@ class LoginInfo {
       RegExp(r'^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z!.@#$%^&*?]{8,}$');
 
   String validate() {
-    String validate = emailValidator(email!);
-    if (validate != '') return validate;
+    String validate;
+    if (email == null && phone == null) {
+      return "Email or Phone is missing";
+    }
+    if (email != null) {
+      validate = emailValidator(email!);
+      if (validate != '') return validate;
+    }
+
     validate = passwordValidator(password);
     if (validate != '') return validate;
     return "";
@@ -55,8 +67,16 @@ class LoginInfo {
     return LoginInfo();
   }
 
+  String confirmPasswordpasswordValidator(String? value) {
+    return (value == password) ? '' : ("Passwords don't match"); //
+  }
+
   get isFromExternalLogin {
     return this.externalLogin != null && this.externalLogin == true;
+  }
+
+  LoginInfo convertFromUser(AuthUser user) {
+    return LoginInfo(email: user.email, phone: user.phone, uid: user.id);
   }
 }
 
@@ -70,10 +90,14 @@ class RegisterInfo {
   RegisterInfo({this.user, this.loginInfo, this.confirmedPassword});
 
   String validate() {
-    String validate = loginInfo!.validate();
+    String validate = '';
+    validate = userValidator(user!);
+    if (validate != '') return validate;
+    validate = loginInfo!.validate();
     if (validate != '') return validate;
     validate = confirmPasswordpasswordValidator(confirmedPassword);
     if (validate != '') return validate;
+
     return "";
   }
 
