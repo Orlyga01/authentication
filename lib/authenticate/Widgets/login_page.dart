@@ -95,7 +95,7 @@ class LoginPage extends StatelessWidget {
                                     onPressed: () => {
                                       context
                                           .read(userNotifier.notifier)
-                                          .setState(registerMode
+                                          .setState(registerMode != true
                                               ? UserNeedsToRegister(
                                                   _logininfo, null)
                                               : UserNeedsToLogin(
