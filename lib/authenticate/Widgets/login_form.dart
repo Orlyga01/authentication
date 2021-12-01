@@ -39,7 +39,7 @@ class _UserFormState extends State<UserForm> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
-                  initialValue: widget.user.displayName,
+                  initialValue: widget.user.displayName ?? '',
                   keyboardType: TextInputType.name,
                   decoration: InputDecoration(
                     hintText: ("Name"),
@@ -91,6 +91,7 @@ class _UserFormState extends State<UserForm> {
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
                   // initialValue: initialValue,
+                  initialValue: widget.user.phone ?? '',
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     hintText: ("Mobile Phone"),

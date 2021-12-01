@@ -18,22 +18,7 @@ final userNotifier = StateNotifierProvider<UserNotifier, UserState>((ref) {
   //  AuthenticationState authState = ref.watch(authNotifierProviderForUser);
 
   return UserNotifier(ref);
-}
-
-    //   try {
-    //     ref
-    //         .read(userNotifier.notifier)
-    //         .setUserAfterAuthentication(authState.user);
-    //   } catch (e) {}
-    // } else if (authState is NeedToRegister) {
-    //   ref.read(userNotifier.notifier).setState(UserNeedsToRegister());
-    // }
-    // return UserLoading();
-    );
-// final userNotifier = StateNotifierProvider<UserNotifier, UserState>((ref) {
-//   //ref.watch(userAuthNotifier);
-//   return UserNotifier(ref.read);
-// });
+});
 
 class UserNotifier extends StateNotifier<UserState> {
   ProviderReference os;

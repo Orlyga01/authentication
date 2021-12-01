@@ -7,6 +7,7 @@ class LoginInfo {
   String? phone;
   String? name;
   String? uid;
+  String? name;
   bool? externalLogin;
   bool? loggedOut;
   String? confirmedPassword;
@@ -17,6 +18,7 @@ class LoginInfo {
       {this.email,
       this.password,
       this.phone,
+      this.name,
       this.externalLogin = false,
       this.user,
       this.name,

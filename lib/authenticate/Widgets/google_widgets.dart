@@ -28,7 +28,7 @@ class GoogleLoginButton extends StatelessWidget {
       if (state is GoogleUnauthenticated) {
         Timer.run(() {
           showDialog(
-              builder: (_) => AlertDialog(
+              builder: (mcontext) => AlertDialog(
                     title: Text("Google Login Error"),
                     content: Text(
                         "Google was not able to log you in. Please contact support" +
@@ -37,7 +37,7 @@ class GoogleLoginButton extends StatelessWidget {
                       TextButton(
                         onPressed: () => {
 
-                          Navigator.pop(context),
+                          Navigator.pop(mcontext),
                           Navigator.pushNamed(externalContext, "login"),
                         },
                         child: const Text('OK'),
