@@ -90,6 +90,24 @@ class FirebaseAuthRepository {
     }
   }
 
+  // Future<UserCredential?> logWithPhone(String phone) async {
+
+  //     try {
+  //      _firebaseAuth.verifyPhoneNumber(
+  // phoneNumber: phone,
+  // verificationCompleted: (PhoneAuthCredential credential) {
+  //   return credential.;
+  // },
+  // verificationFailed: (FirebaseAuthException e) {
+  //   throw firebaseAuthExceptionConvertToReadableError(e);
+  // },
+  // codeSent: (String verificationId, int? resendToken) {},
+  // codeAutoRetrievalTimeout: (String verificationId) {});
+  //     } on FirebaseAuthException catch (e) {
+  //       throw firebaseAuthExceptionConvertToReadableError(e);
+  //     }
+  //   }
+
   /// Signs out the current user which will emit
   /// [User.empty] from the [user] Stream.
   ///

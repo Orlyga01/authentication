@@ -5,6 +5,7 @@ class LoginInfo {
   String? email;
   String? password;
   String? phone;
+  String? name;
   String? uid;
   bool? externalLogin;
   bool? loggedOut;
@@ -18,6 +19,7 @@ class LoginInfo {
       this.phone,
       this.externalLogin = false,
       this.user,
+      this.name,
       this.uid});
   static final RegExp _emailRegExp = RegExp(
     r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',

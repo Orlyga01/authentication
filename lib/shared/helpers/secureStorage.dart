@@ -43,6 +43,9 @@ class UserLocalStorage {
     if (loginInfo.email != null) {
       await setKeyValue("email", loginInfo.email!);
     }
+    if (loginInfo.name != null) {
+      await setKeyValue("name", loginInfo.name!);
+    }
     if (loginInfo.phone != null) {
       await setKeyValue("phone", loginInfo.phone!);
     }
@@ -64,6 +67,9 @@ class UserLocalStorage {
       LoginInfo loginInfo = LoginInfo();
       loginInfo.email = _storage.getString(
         "email",
+      );
+      loginInfo.name = _storage.getString(
+        "name",
       );
       loginInfo.phone = _storage.getString(
         "phone",

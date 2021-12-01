@@ -88,6 +88,13 @@ class LoginPage extends StatelessWidget {
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () => {
+                                      context
+                                          .read(userNotifier.notifier)
+                                          .setState(registerMode
+                                              ? UserNeedsToRegister(
+                                                  _logininfo, null)
+                                              : UserNeedsToLogin(
+                                                  _logininfo, null)),
                                       Navigator.pop(context),
                                     },
                                     child: const Text('OK'),
