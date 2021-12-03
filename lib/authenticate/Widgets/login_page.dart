@@ -87,7 +87,7 @@ class LoginPage extends StatelessWidget {
                           Timer.run(() {
                             showDialog(
                               context: context,
-                              builder: (_) => AlertDialog(
+                              builder: (mcontext) => AlertDialog(
                                 title: Text("Login error"),
                                 content: Text(state.err!),
                                 actions: <Widget>[
@@ -100,7 +100,7 @@ class LoginPage extends StatelessWidget {
                                                   _logininfo, null)
                                               : UserNeedsToLogin(
                                                   _logininfo, null)),
-                                      Navigator.pop(context),
+                                      Navigator.pop(mcontext),
                                     },
                                     child: const Text('OK'),
                                   ),
@@ -117,13 +117,13 @@ class LoginPage extends StatelessWidget {
                         Timer.run(() {
                           showDialog(
                             context: context,
-                            builder: (_) => AlertDialog(
+                            builder: (mcontext) => AlertDialog(
                               title: Text("Login error"),
                               content: Text(state.err!),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => {
-                                    Navigator.pop(context),
+                                    Navigator.pop(mcontext),
                                   },
                                   child: const Text('OK'),
                                 ),
