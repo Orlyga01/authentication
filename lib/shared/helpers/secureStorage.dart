@@ -71,6 +71,9 @@ class UserLocalStorage {
       loginInfo.email = _storage.getString(
         "email",
       );
+      loginInfo.name = _storage.getString(
+        "name",
+      );
       loginInfo.phone = _storage.getString(
         "phone",
       );

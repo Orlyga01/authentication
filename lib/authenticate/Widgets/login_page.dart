@@ -87,13 +87,20 @@ class LoginPage extends StatelessWidget {
                           Timer.run(() {
                             showDialog(
                               context: context,
-                              builder: (_) => AlertDialog(
+                              builder: (mcontext) => AlertDialog(
                                 title: Text("Login error"),
                                 content: Text(state.err!),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () => {
-                                      Navigator.pop(context),
+                                      context
+                                          .read(userNotifier.notifier)
+                                          .setState(registerMode != true
+                                              ? UserNeedsToRegister(
+                                                  _logininfo, null)
+                                              : UserNeedsToLogin(
+                                                  _logininfo, null)),
+                                      Navigator.pop(mcontext),
                                     },
                                     child: const Text('OK'),
                                   ),
@@ -110,13 +117,13 @@ class LoginPage extends StatelessWidget {
                         Timer.run(() {
                           showDialog(
                             context: context,
-                            builder: (_) => AlertDialog(
+                            builder: (mcontext) => AlertDialog(
                               title: Text("Login error"),
                               content: Text(state.err!),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => {
-                                    Navigator.pop(context),
+                                    Navigator.pop(mcontext),
                                   },
                                   child: const Text('OK'),
                                 ),

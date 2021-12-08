@@ -5,8 +5,8 @@ class LoginInfo {
   String? email;
   String? password;
   String? phone;
-  String? uid;
   String? name;
+  String? uid;
   bool? externalLogin;
   bool? loggedOut;
   String? confirmedPassword;

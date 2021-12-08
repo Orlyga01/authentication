@@ -75,14 +75,18 @@ class AuthenticationController {
   }
 
   Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
-      [bool fromRegister = false]) async {
+      [bool fromRegister = false, bool authByPhone = false]) async {
     UserCredential? userc;
     //That means
     try {
       if (fromRegister)
         userc = await _authRepository.signUp(logininfo);
-      else
+      else {
+        // String? phone = logininfo.phone ?? logininfo.user?.phone;
+        // if (phone != null && authByPhone)
+        //   userc = await _authRepository.loginByPhone(phone);
         userc = await _authRepository.logInWithEmailAndPassword(logininfo);
+      }
       logininfo.uid = userc!.user!.uid;
       //If its the same user as before login
       if (isDifferentLoginUser(userc))

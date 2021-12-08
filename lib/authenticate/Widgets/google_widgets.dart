@@ -36,7 +36,6 @@ class GoogleLoginButton extends StatelessWidget {
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => {
-
                           Navigator.pop(mcontext),
                           Navigator.pushNamed(externalContext, "login"),
                         },

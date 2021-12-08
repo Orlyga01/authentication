@@ -28,13 +28,14 @@ class AppleLoginButton extends StatelessWidget {
             Timer.run(
               () {
                 showDialog(
-                  builder: (_) => AlertDialog(
+                  builder: (mcontext) => AlertDialog(
                     title: Text("Apple Login Error"),
                     content: Text("Apple was not able to log you in. " +
                         state.err.toString()),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => {
+                          Navigator.pop(mcontext),
                           Navigator.pushNamed(externalContext, "login"),
                         },
                         child: const Text('OK'),

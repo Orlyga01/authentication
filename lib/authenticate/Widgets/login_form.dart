@@ -9,7 +9,8 @@ class UserForm extends StatefulWidget {
   final AuthUser user;
   final LoginInfo? loginInfo;
   final bool fromRegister;
-
+  final bool emailLogin;
+  final bool phoneLogin;
   // final GlobalKey<FormState> formKey;
 
   UserForm({
@@ -17,6 +18,8 @@ class UserForm extends StatefulWidget {
     required this.user,
     this.fromRegister = false,
     this.loginInfo,
+    this.emailLogin = true,
+    this.phoneLogin = true,
     // required this.formKey,
   }) : super(key: key);
   @override

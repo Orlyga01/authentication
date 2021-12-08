@@ -102,7 +102,7 @@ class UserController {
   AuthUser _user = AuthUser.empty;
   bool _isLoggedIn = false;
   FirebaseUserRepository _userRepository = FirebaseUserRepository();
-
+  Map<String, dynamic>? _loginSettings;
   factory UserController() {
     return _userC;
   }
@@ -259,5 +259,10 @@ class UserController {
 
   bool get isUserSuperAdmin {
     return _user.role == AuthConstants.superAdmin;
+  }
+
+  set loginSettings(Map<String, dynamic> settings) => _loginSettings = settings;
+  dynamic getSettings(String setting) {
+    return _loginSettings?[setting];
   }
 }
