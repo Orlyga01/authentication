@@ -149,7 +149,7 @@ class AuthenticationController {
           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
       if (userCredential != null) {
         await afterExternalLogin(userCredential);
-        return AppleAuthenticated(userCredential.user!);
+        return Authenticated(userCredential.user!, null);
       } else {
         return AppleUnauthenticated("Apple Login failed");
       }
@@ -184,7 +184,7 @@ class AuthenticationController {
       if (userc != null) {
         await afterExternalLogin(userc);
 
-        return GoogleAuthenticated(userc.user!);
+        return Authenticated(userc.user!, null);
       } else {
         return GoogleUnauthenticated("Google Login failed", null);
       }

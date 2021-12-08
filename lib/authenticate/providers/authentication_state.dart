@@ -31,22 +31,6 @@ class Authenticated extends AuthenticationState {
   String toString() => 'Authenticated { userId: $user }';
 }
 
-class GoogleAuthenticated extends AuthenticationState {
-  final User user;
-
-  const GoogleAuthenticated(
-    this.user,
-  );
-
-  @override
-  List<Object> get props => [
-        user,
-      ];
-
-  @override
-  String toString() => 'GoogleAuthenticated { userId: $user }';
-}
-
 class GoogleUnauthenticated extends AuthenticationState {
   final String err;
   final LoginInfo? logininfo;
@@ -61,21 +45,6 @@ class GoogleUnauthenticated extends AuthenticationState {
   String toString() => 'Authenticated { userId: $err }';
 }
 
-class AppleAuthenticated extends AuthenticationState {
-  final User user;
-
-  const AppleAuthenticated(
-    this.user,
-  );
-
-  @override
-  List<Object> get props => [
-        user,
-      ];
-
-  @override
-  String toString() => 'AppleAuthenticated { userId: $user }';
-}
 
 class AppleUnauthenticated extends AuthenticationState {
   final String err;

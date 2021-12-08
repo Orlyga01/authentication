@@ -1,12 +1,15 @@
 import 'package:authentication/authenticate/models/login.dart';
+import 'package:authentication/shared/auth_constants.dart';
 import 'package:authentication/user/providers/import_user.dart';
 
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class UserForm extends StatefulWidget {
   final AuthUser user;
   final LoginInfo? loginInfo;
   final bool fromRegister;
+
   // final GlobalKey<FormState> formKey;
 
   UserForm({
@@ -104,32 +107,35 @@ class _UserFormState extends State<UserForm> {
           if (widget.loginInfo != null)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
-              child: TextFormField(
-                  initialValue: widget.loginInfo!.isFromExternalLogin
-                      ? null
-                      : widget.loginInfo!.password,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    errorMaxLines: 2,
-                    hintText: ("Password"),
-                    //     prefixIcon: Icon(
-                    //     Icons.star_rate,
-                    //     size: 10,
-                    //    color: Colors.red,
-                    //  ),
-                  ),
-                  onChanged: (String inputString) {
-                    widget.loginInfo!.password = inputString;
-                  },
-                  validator: (value) {
-                    String err = LoginInfo().passwordValidator(value);
-                    if (err == '')
-                      widget.loginInfo!.password = value;
-                    else
-                      return (LoginInfo.passwordErrString);
+              child: Directionality(
+                textDirection: ui.TextDirection.rtl,
+                child: TextFormField(
+                    initialValue: widget.loginInfo!.isFromExternalLogin
+                        ? null
+                        : widget.loginInfo!.password,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      errorMaxLines: 2,
+                      hintText: ("Password"),
+                      //     prefixIcon: Icon(
+                      //     Icons.star_rate,
+                      //     size: 10,
+                      //    color: Colors.red,
+                      //  ),
+                    ),
+                    onChanged: (String inputString) {
+                      widget.loginInfo!.password = inputString;
+                    },
+                    validator: (value) {
+                      String err = LoginInfo().passwordValidator(value);
+                      if (err == '')
+                        widget.loginInfo!.password = value;
+                      else
+                        return (LoginInfo.passwordErrString);
 
-                    return null;
-                  }),
+                      return null;
+                    }),
+              ),
             ),
           if (widget.loginInfo != null && widget.fromRegister)
             TextFormField(
