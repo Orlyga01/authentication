@@ -144,7 +144,12 @@ class LoginPage extends StatelessWidget {
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () => {
+                                        context
+                                            .read(authNotifierProviderForUser
+                                                .notifier)
+                                            .resetState(),
                                         Navigator.pop(mcontext),
+
                                         //  Navigator.pushNamed(externalContext, "login"),
                                       },
                                       child: const Text('OK'),
