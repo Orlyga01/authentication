@@ -62,9 +62,10 @@ class LoginPage extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: Text(
+              title: Center(
+                  child: Text(
                 "Login",
-              ),
+              )),
             ),
             body: Container(
               child: SingleChildScrollView(
