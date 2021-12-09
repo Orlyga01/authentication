@@ -31,34 +31,9 @@ class Authenticated extends AuthenticationState {
   String toString() => 'Authenticated { userId: $user }';
 }
 
-class GoogleUnauthenticated extends AuthenticationState {
-  final String err;
-  final LoginInfo? logininfo;
-  const GoogleUnauthenticated(this.err, this.logininfo);
-  @override
-  List<Object> get props => [
-        errorTextConfiguration,
-        {logininfo}
-      ];
-
-  @override
-  String toString() => 'Authenticated { userId: $err }';
-}
 
 
-class AppleUnauthenticated extends AuthenticationState {
-  final String err;
-  const AppleUnauthenticated(
-    this.err,
-  );
-  @override
-  List<Object> get props => [
-        errorTextConfiguration,
-      ];
 
-  @override
-  String toString() => 'Authenticated { userId: $err }';
-}
 
 class SignUpCompleted extends AuthenticationState {
   final AuthUser user;
@@ -101,6 +76,12 @@ class NeedToRegister extends AuthenticationState {
 }
 
 class SignUpInProgress extends AuthenticationState {}
+
+class AuthenticationFailed extends AuthenticationState {
+  LoginInfo? loginInfo;
+  String error;
+  AuthenticationFailed(this.error, [this.loginInfo]);
+}
 
 class AuthenticationInProgress extends AuthenticationState {}
 

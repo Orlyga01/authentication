@@ -23,31 +23,6 @@ class AppleLoginButton extends StatelessWidget {
           ScopedReader watch,
           child,
         ) {
-          final state = watch(authNotifierProviderForUser);
-          if (state is AppleUnauthenticated) {
-            Timer.run(
-              () {
-                showDialog(
-                  builder: (mcontext) => AlertDialog(
-                    title: Text("Apple Login Error"),
-                    content: Text("Apple was not able to log you in. " +
-                        state.err.toString()),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => {
-                          Navigator.pop(mcontext),
-                          Navigator.pushNamed(externalContext, "login"),
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                  context: externalContext,
-                );
-              },
-            );
-            return SizedBox.shrink();
-          }
           return Container(
             width: MediaQuery.of(context).size.width * 0.7,
             child: Row(

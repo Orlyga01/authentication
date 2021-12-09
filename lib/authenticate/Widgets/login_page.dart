@@ -134,6 +134,27 @@ class LoginPage extends StatelessWidget {
                         });
                       }
                       return SizedBox.shrink();
+                    } else if (state is UserError) {
+                      Timer.run(() {
+                        showDialog(
+                            builder: (mcontext) => AlertDialog(
+                                  title: Text("Error"),
+                                  content: Text("Error while logging in: " +
+                                      state.message),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => {
+                                        Navigator.pop(mcontext),
+                                        //  Navigator.pushNamed(externalContext, "login"),
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                            context: context);
+                      });
+
+                      return SizedBox.shrink();
                     } else {
                       return SizedBox.shrink();
                     }

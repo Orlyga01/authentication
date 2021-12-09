@@ -25,30 +25,7 @@ class GoogleLoginButton extends StatelessWidget {
 
     return Consumer(builder: (context, ScopedReader watch, child) {
       final state = watch(authNotifierProviderForUser);
-      if (state is GoogleUnauthenticated) {
-        Timer.run(() {
-          showDialog(
-              builder: (mcontext) => AlertDialog(
-                    title: Text("Google Login Error"),
-                    content: Text(
-                        "Google was not able to log you in. Please contact support" +
-                            state.err),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => {
-                          Navigator.pop(mcontext),
-                          Navigator.pushNamed(externalContext, "login"),
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-              context: externalContext);
-        });
-
-        return SizedBox.shrink();
-      }
-
+      
       return OutlinedButton(
           style: OutlinedButton.styleFrom(
               backgroundColor: !outlined ? mainColor : Colors.white),

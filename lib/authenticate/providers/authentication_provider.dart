@@ -108,7 +108,7 @@ class AuthenticationController {
 
   Future<AuthenticationState> appleLogin() async {
     if (!await SignInWithApple.isAvailable()) {
-      return AppleUnauthenticated(
+      return AuthenticationFailed(
         'This Device is not eligible for Apple Sign in',
       ); //Break from the program
     }
@@ -155,10 +155,10 @@ class AuthenticationController {
         await afterExternalLogin(userCredential);
         return Authenticated(userCredential.user!, null);
       } else {
-        return AppleUnauthenticated("Apple Login failed");
+        return AuthenticationFailed("Apple Login failed");
       }
     } catch (e) {
-      return AppleUnauthenticated(e.toString());
+      return AuthenticationFailed(e.toString());
     }
   }
 
@@ -190,10 +190,10 @@ class AuthenticationController {
 
         return Authenticated(userc.user!, null);
       } else {
-        return GoogleUnauthenticated("Google Login failed", null);
+        return AuthenticationFailed("Google Login failed", null);
       }
     } catch (e) {
-      return GoogleUnauthenticated(e.toString(), null);
+      return AuthenticationFailed(e.toString(), null);
     }
   }
 
