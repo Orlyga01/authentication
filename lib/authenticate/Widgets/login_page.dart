@@ -349,7 +349,7 @@ class _SignUpButton extends StatelessWidget {
             if (_formKey.currentState!.validate() && loginInfo != null) {
               externalContext
                   .read(authNotifierProviderForUser.notifier)
-                  .login(loginInfo!, true);
+                  .login(loginInfo!, fromRegister: true);
             }
           },
         ));

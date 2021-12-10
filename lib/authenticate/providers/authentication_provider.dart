@@ -27,7 +27,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
         state = NeedToLogin(logininfo);
         return;
       }
-      login(logininfo);
+      login(logininfo, keepExternal: true);
     } catch (e) {
       state = Unauthenticated(e.toString(), logininfo);
     }
@@ -37,9 +37,9 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     state = AfterSuccessfulLogin();
   }
 
-  Future<void> login(LoginInfo logininfo, [bool fromRegister = false]) async {
+  Future<void> login(LoginInfo logininfo, {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
-    logininfo.externalLogin = false;
+    if (!keepExternal) logininfo.externalLogin = false;
     await UserLocalStorage().setLoginData(logininfo);
     state = await AuthenticationController()
         .checkCredentials(logininfo, fromRegister);
