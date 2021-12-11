@@ -4,3 +4,10 @@ bool isEmpty(dynamic field) {
       field.length == 0 ||
       (field == false));
 }
+
+dynamic myDateSerializer(dynamic object) {
+  if (object is DateTime) {
+    return object.toIso8601String();
+  }
+  return object;
+}

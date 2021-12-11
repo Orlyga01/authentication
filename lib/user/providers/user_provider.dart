@@ -135,6 +135,7 @@ class UserController {
   Future<UserState> setUserAfterAuthentication(
       User authUser, LoginInfo? loginInfo) async {
     try {
+      UserLocalStorage().getAuthUser();
       AuthUser? user = await UserController().getUserById(authUser.uid);
       //This is a new user - and we need to get him into the system
       //However, it might be that the user's information
@@ -159,12 +160,14 @@ class UserController {
           UserController().setUserInController(newUser);
           if (newUser.isInfoMissing) return UserMissingInfo(newUser);
           _isLoggedIn = true;
+          UserLocalStorage().setAuthUser(newUser);
           return UserLoaded(newUser, "userAdded");
         } catch (e) {
           UserError(e.toString());
         }
       } else {
         UserController().setUserInController(user);
+        UserLocalStorage().setAuthUser(user);
         if (user.isInfoMissing) return UserMissingInfo(user);
         _isLoggedIn = true;
 
@@ -234,7 +237,8 @@ class UserController {
       } else if (user != null) {
         _user = user;
       }
-      UserLocalStorage().setLoginData(LoginInfo().convertFromUser(_user));
+      //TODO need to think if this is needed:
+      // UserLocalStorage().setLoginData(LoginInfo().convertFromUser(_user));
 
       // and we need to update the local storage
     }

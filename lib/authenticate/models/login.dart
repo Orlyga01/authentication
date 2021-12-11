@@ -1,5 +1,6 @@
 import 'package:authentication/shared/import_shared.dart';
 import 'package:authentication/user/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginInfo {
   String? email;
@@ -10,6 +11,7 @@ class LoginInfo {
   bool? externalLogin;
   bool? loggedOut;
   String? confirmedPassword;
+  User? outerUser;
   AuthUser? user = AuthUser.empty;
 
   String? role; //superAdmin, admin
@@ -20,7 +22,28 @@ class LoginInfo {
       this.name,
       this.externalLogin = false,
       this.user,
+      this.outerUser,
       this.uid});
+
+  Map<String, dynamic> toJson() => {
+        'email': email,
+        'password': password,
+        'phone': phone,
+        'name': name,
+        'uid': uid,
+        'externalLogin': externalLogin,
+        'outerUser': outerUser,
+        'user': user?.toJson()
+      };
+  LoginInfo.fromJson(Map<String, dynamic> json)
+      : email = json["email"],
+        password = json["password"],
+        phone = json["phone"],
+        name = json["name"],
+        uid = json["uid"],
+        externalLogin = json["externalLogin"],
+        outerUser = json["outerUser"],
+        user = AuthUser.fromJson(json["user"]);
   static final RegExp _emailRegExp = RegExp(
     r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
   );

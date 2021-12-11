@@ -1,6 +1,7 @@
 import 'dart:async' show Future;
 import 'dart:convert';
 import 'package:authentication/authenticate/models/login.dart';
+import 'package:authentication/user/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserLocalStorage {
@@ -30,6 +31,15 @@ class UserLocalStorage {
     }
   }
 
+  Future<void> setAuthUser(AuthUser user) {
+    return _storage.setString("AuthUser", user.toString());
+  }
+
+  AuthUser? getAuthUser() {
+    String? user = _storage.getString("AuthUser");
+    return user == null ? null : AuthUser.fromString(user);
+  }
+
   Future setLanguage(String locale) async {
     await setKeyValue("languageCode", locale);
   }
@@ -40,6 +50,7 @@ class UserLocalStorage {
   }
 
   Future<void> setLoginData(LoginInfo loginInfo) async {
+    loginInfo.toJson();
     if (loginInfo.email != null) {
       await setKeyValue("email", loginInfo.email!);
     }

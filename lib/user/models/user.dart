@@ -1,5 +1,7 @@
 //import 'package:property_change_notifier/property_change_notifier.dart';
 
+import 'dart:convert';
+
 import 'package:authentication/shared/import_shared.dart';
 
 class AuthUser {
@@ -49,6 +51,15 @@ class AuthUser {
 
   //collectionFromJson(
   //   json['groups'], (value) => UserGroup.fromJson(value));
+  @override
+  String toString() {
+    return json.encode(this.toJson(), toEncodable: myDateSerializer);
+  }
+
+  AuthUser.fromString(String str) {
+    var x = json.decode(str);
+    AuthUser.fromJson(x);
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,

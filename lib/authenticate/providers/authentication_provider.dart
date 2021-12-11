@@ -37,9 +37,13 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     state = AfterSuccessfulLogin();
   }
 
-  Future<void> login(LoginInfo logininfo, {bool fromRegister = false, bool keepExternal = false}) async {
+  Future<void> login(LoginInfo logininfo,
+      {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
+    if (logininfo.loggedOut != true) {
+      state = Authenticated(logininfo.outerUser!, logininfo);
+    }
     await UserLocalStorage().setLoginData(logininfo);
     state = await AuthenticationController()
         .checkCredentials(logininfo, fromRegister);
@@ -92,7 +96,7 @@ class AuthenticationController {
       if (isDifferentLoginUser(userc))
         await UserLocalStorage()
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
-      await UserLocalStorage().setKeyValue("loggedOut", "false");
+      await UserLocalStorage().setKeyValue("", "false");
       log("after credentials success");
       return Authenticated(userc.user!, logininfo);
     } catch (e) {
@@ -168,7 +172,8 @@ class AuthenticationController {
         email: userc.user!.email,
         uid: userc.user!.uid,
         phone: userc.user!.phoneNumber,
-        externalLogin: exteranLogin);
+        externalLogin: exteranLogin,
+        outerUser: userc.user!);
   }
 
   Future<void> afterExternalLogin(UserCredential userc) async {
@@ -204,12 +209,4 @@ class AuthenticationController {
   Future<String> sendResetPassword(email) async {
     return _authRepository.resetPassword(email);
   }
-
-  // logOut() async {
-  //   UserLocalStorage _localstorage = UserLocalStorage();
-
-  //   LoginInfo? loginInfo = await _localstorage.getLoginData();
-  //   await _localstorage.setKeyValue("loggedOut", true.toString());
-  //   UserController().resetUser();
-  // }
 }
