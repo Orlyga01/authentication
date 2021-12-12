@@ -112,8 +112,6 @@ class LoginPage extends StatelessWidget {
                           });
                         }
                       }
-
-                      Im using riverpod, 
                       return SizedBox.shrink();
                     } else if (state is UserNeedsToLogin) {
                       context.read(userNotifier.notifier).setState(IdleState());
