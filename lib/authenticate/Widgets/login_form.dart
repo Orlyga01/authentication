@@ -111,7 +111,7 @@ class _UserFormState extends State<UserForm> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Directionality(
-                textDirection: ui.TextDirection.rtl,
+                textDirection: ui.TextDirection.ltr,
                 child: TextFormField(
                     initialValue: widget.loginInfo!.isFromExternalLogin
                         ? null
@@ -144,6 +144,7 @@ class _UserFormState extends State<UserForm> {
             TextFormField(
                 initialValue: widget.loginInfo!.confirmedPassword,
                 obscureText: true,
+                textDirection: ui.TextDirection.ltr,
                 decoration: InputDecoration(
                   hintText: ("Confirm Password"),
                   // prefixIcon:

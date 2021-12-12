@@ -217,24 +217,7 @@ class LoginPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              // Row(
-                              //   children: [
-                              //     Padding(
-                              //       padding: const EdgeInsets.symmetric(
-                              //           horizontal: 5),
-                              //       child: Text("Don't have an account yet?"),
-                              //     ),
-                              //     InkWell(
-                              //       onTap: () async {
-                              //         Navigator.pushNamed(
-                              //           context,
-                              //           "register",
-                              //         );
-                              //       },
-                              //       child: Text("Lets crate a new account", style: (color: )),
-                              //     )
-                              //   ],
-                              // ),
+                             
                               if (registerMode == true)
                                 TextButton(
                                   child: Text(("Already have an account?"),
