@@ -41,7 +41,10 @@ class _UserFormState extends State<UserForm> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
-                  initialValue: widget.user.displayName ?? '',
+                  initialValue:
+                      widget.loginInfo != null && widget.loginInfo!.name != null
+                          ? widget.loginInfo!.name
+                          : widget.user.displayName ?? '',
                   keyboardType: TextInputType.name,
                   decoration: InputDecoration(
                     hintText: ("Name"),
@@ -58,36 +61,6 @@ class _UserFormState extends State<UserForm> {
                     return null;
                   }),
             ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: TextFormField(
-                initialValue: (widget.loginInfo != null &&
-                        widget.loginInfo!.isFromExternalLogin)
-                    ? null
-                    : widget.user.email,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: ("Email"),
-                  //   prefixIcon: Icon(Icons.star_rate, size: 10, color: Colors.red),
-                ),
-                onChanged: (String inputString) {
-                  setState(() {
-                    if (widget.loginInfo != null)
-                      widget.loginInfo!.password = null;
-                    widget.user.email = inputString;
-                    widget.loginInfo?.email = inputString;
-                  });
-                },
-                validator: (value) {
-                  String validate = LoginInfo().emailValidator(value!);
-                  if (validate == '') {
-                    widget.user.email = value;
-                    widget.loginInfo?.email = value;
-                  } else
-                    return validate;
-                  return null;
-                }),
-          ),
           if (widget.loginInfo == null || widget.fromRegister)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
@@ -107,65 +80,94 @@ class _UserFormState extends State<UserForm> {
                       return "missing phone";
                   }),
             ),
-          if (widget.loginInfo != null)
-            Padding(
+          Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: Container(
               padding: const EdgeInsets.only(top: 8.0),
-              child: Directionality(
-                textDirection: ui.TextDirection.ltr,
-                child: TextFormField(
-                    initialValue: widget.loginInfo!.isFromExternalLogin
-                        ? null
-                        : widget.loginInfo!.password,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      errorMaxLines: 2,
-                      hintText: ("Password"),
-                      //     prefixIcon: Icon(
-                      //     Icons.star_rate,
-                      //     size: 10,
-                      //    color: Colors.red,
-                      //  ),
-                    ),
-                    onChanged: (String inputString) {
-                      widget.loginInfo!.password = inputString;
-                    },
-                    validator: (value) {
-                      String err = LoginInfo().passwordValidator(value);
-                      if (err == '')
-                        widget.loginInfo!.password = value;
-                      else
-                        return (LoginInfo.passwordErrString);
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: TextFormField(
+                        initialValue: (widget.loginInfo != null &&
+                                widget.loginInfo!.isFromExternalLogin)
+                            ? null
+                            : widget.user.email,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: ("Email"),
+                          //   prefixIcon: Icon(Icons.star_rate, size: 10, color: Colors.red),
+                        ),
+                        onChanged: (String inputString) {
+                          setState(() {
+                            if (widget.loginInfo != null)
+                              widget.loginInfo!.password = null;
+                            widget.user.email = inputString;
+                            widget.loginInfo?.email = inputString;
+                          });
+                        },
+                        validator: (value) {
+                          String validate = LoginInfo().emailValidator(value!);
+                          if (validate == '') {
+                            widget.user.email = value;
+                            widget.loginInfo?.email = value;
+                          } else
+                            return validate;
+                          return null;
+                        }),
+                  ),
+                  if (widget.loginInfo != null)
+                    TextFormField(
+                        initialValue: widget.loginInfo!.isFromExternalLogin
+                            ? null
+                            : widget.loginInfo!.password,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          errorMaxLines: 2,
+                          hintText: ("Password"),
+                        ),
+                        onChanged: (String inputString) {
+                          widget.loginInfo!.password = inputString;
+                        },
+                        validator: (value) {
+                          String err = LoginInfo().passwordValidator(value);
+                          if (err == '')
+                            widget.loginInfo!.password = value;
+                          else
+                            return (LoginInfo.passwordErrString);
 
-                      return null;
-                    }),
+                          return null;
+                        }),
+                  if (widget.loginInfo != null && widget.fromRegister)
+                    TextFormField(
+                        initialValue: widget.loginInfo!.confirmedPassword,
+                        obscureText: true,
+                        textDirection: ui.TextDirection.ltr,
+                        decoration: InputDecoration(
+                          hintText: ("Confirm Password"),
+                          // prefixIcon:
+                          //     Icon(Icons.star_rate, size: 10, color: Colors.red),
+                          // prefixIconConstraints: BoxConstraints(
+                          //   maxWidth: 10,
+                          // ),
+                        ),
+                        onChanged: (String inputString) {
+                          widget.loginInfo!.confirmedPassword = inputString;
+                        },
+                        validator: (value) {
+                          if (widget.loginInfo!
+                                  .confirmPasswordpasswordValidator(value) ==
+                              '') {
+                            widget.loginInfo!.confirmedPassword = value;
+                          } else {
+                            return ("Password") + " " + ("doesn't match");
+                          }
+                          return null;
+                        }),
+                ],
               ),
             ),
-          if (widget.loginInfo != null && widget.fromRegister)
-            TextFormField(
-                initialValue: widget.loginInfo!.confirmedPassword,
-                obscureText: true,
-                textDirection: ui.TextDirection.ltr,
-                decoration: InputDecoration(
-                  hintText: ("Confirm Password"),
-                  // prefixIcon:
-                  //     Icon(Icons.star_rate, size: 10, color: Colors.red),
-                  // prefixIconConstraints: BoxConstraints(
-                  //   maxWidth: 10,
-                  // ),
-                ),
-                onChanged: (String inputString) {
-                  widget.loginInfo!.confirmedPassword = inputString;
-                },
-                validator: (value) {
-                  if (widget.loginInfo!
-                          .confirmPasswordpasswordValidator(value) ==
-                      '') {
-                    widget.loginInfo!.confirmedPassword = value;
-                  } else {
-                    return ("Password") + " " + ("doesn't match");
-                  }
-                  return null;
-                }),
+          ),
           if (!widget.fromRegister && widget.loginInfo != null)
             Container(
               padding: EdgeInsets.only(top: 20),
