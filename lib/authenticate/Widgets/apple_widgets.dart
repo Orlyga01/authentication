@@ -24,7 +24,6 @@ class AppleLoginButton extends StatelessWidget {
           child,
         ) {
           return Container(
-            width: MediaQuery.of(context).size.width * 0.7,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
