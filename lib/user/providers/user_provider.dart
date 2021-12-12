@@ -135,25 +135,27 @@ class UserController {
   Future<UserState> setUserAfterAuthentication(
       User authUser, LoginInfo? loginInfo) async {
     try {
-      UserLocalStorage().getAuthUser();
-      AuthUser? user = await UserController().getUserById(authUser.uid);
-      //This is a new user - and we need to get him into the system
-      //However, it might be that the user's information
-      AuthUser newUser = AuthUser(
-        id: authUser.uid,
-        email:
-            isEmpty(authUser.email) ? loginInfo?.user?.email : authUser.email,
-        phone: isEmpty(authUser.phoneNumber)
-            ? loginInfo?.user?.phone
-            : authUser.phoneNumber,
-        image: isEmpty(loginInfo?.user?.image)
-            ? authUser.photoURL
-            : loginInfo?.user?.image,
-        displayName: isEmpty(loginInfo?.user?.displayName)
-            ? authUser.displayName
-            : loginInfo?.user?.displayName,
-      );
+      AuthUser? user = UserLocalStorage().getAuthUser();
       if (user == null) {
+        user = await UserController().getUserById(authUser.uid);
+        //This is a new user - and we need to get him into the system
+        //However, it might be that the user's information
+      }
+      if (user == null) {
+        AuthUser newUser = AuthUser(
+          id: authUser.uid,
+          email:
+              isEmpty(authUser.email) ? loginInfo?.user?.email : authUser.email,
+          phone: isEmpty(authUser.phoneNumber)
+              ? loginInfo?.user?.phone
+              : authUser.phoneNumber,
+          image: isEmpty(loginInfo?.user?.image)
+              ? authUser.photoURL
+              : loginInfo?.user?.image,
+          displayName: isEmpty(loginInfo?.user?.displayName)
+              ? authUser.displayName
+              : loginInfo?.user?.displayName,
+        );
         try {
           String? userid = await addUser(newUser);
           if (userid == null) throw "Couldnt create a user";
