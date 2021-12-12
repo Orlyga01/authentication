@@ -41,7 +41,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
-    if (logininfo.loggedOut != true) {
+    if (logininfo.loggedOut != true && !fromRegister) {
       state = Authenticated(logininfo.outerUser!, logininfo);
     }
     await UserLocalStorage().setLoginData(logininfo);

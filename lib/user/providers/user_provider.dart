@@ -136,7 +136,7 @@ class UserController {
       User authUser, LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
-      if (user == null) {
+      if (user == null ) {
         user = await UserController().getUserById(authUser.uid);
         //This is a new user - and we need to get him into the system
         //However, it might be that the user's information

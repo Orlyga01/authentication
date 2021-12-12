@@ -166,21 +166,21 @@ class LoginPage extends StatelessWidget {
                                     padding: EdgeInsets.only(bottom: 30),
                                     child: logoWidget!)
                                 : SizedBox.shrink(),
-                            // Container(
-                            //     // width:
-                            //     //     MediaQuery.of(context).size.width * 2 / 3,
-                            //     child: GoogleLoginButton(
-                            //   outlined: true,
-                            //   externalContext: context,
-                            // )),
+                            Container(
+                                // width:
+                                //     MediaQuery.of(context).size.width * 2 / 3,
+                                child: GoogleLoginButton(
+                              outlined: true,
+                              externalContext: context,
+                            )),
                             SizedBox(height: 20.0),
-                            // Container(
-                            //     // width:
-                            //     //     MediaQuery.of(context).size.width * 2 / 3,
-                            //     child: AppleLoginButton(
-                            //   outlined: true,
-                            //   externalContext: context,
-                            // )),
+                            Container(
+                                // width:
+                                //     MediaQuery.of(context).size.width * 2 / 3,
+                                child: AppleLoginButton(
+                              outlined: true,
+                              externalContext: context,
+                            )),
                             SizedBox(height: 20.0),
                             Divider(),
                             if (registerMode != true)

@@ -173,9 +173,9 @@ class FirebaseAuthRepository {
     if (!isEmpty(error.code)) {
       switch (error.code) {
         case 'user-not-found':
-          return 'No user found for that email.';
+          return 'Email was not found. Check your email and try again';
         case 'wrong-password':
-          return 'Wrong password provided for that user.';
+          return 'Wrong password';
         case 'email-already-exists':
           return 'Email already exists';
         case 'invalid-phone-number':
