@@ -200,12 +200,12 @@ class LoginPage extends StatelessWidget {
                                       new TextSpan(
                                         text: 'Don\'t have an account yet? ',
                                         style:
-                                            new TextStyle(color: Colors.black),
+                                            new TextStyle(color: Colors.black, fontSize: 14),
                                       ),
                                       new TextSpan(
                                         text: 'Lets create one',
                                         style:
-                                            new TextStyle(color: Colors.blue),
+                                            new TextStyle(color: Colors.blue, fontSize: 14),
                                         recognizer: new TapGestureRecognizer()
                                           ..onTap = () async {
                                             Navigator.pushReplacementNamed(
