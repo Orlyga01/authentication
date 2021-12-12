@@ -4,8 +4,6 @@ import 'package:authentication/authenticate/Widgets/apple_widgets.dart';
 import 'package:authentication/authenticate/Widgets/google_widgets.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/Widgets/missing_info.dart';
-import 'package:authentication/user/providers/user_provider.dart';
-import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/authentication.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -93,13 +91,6 @@ class LoginPage extends StatelessWidget {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => {
-                                    // context
-                                    //     .read(userNotifier.notifier)
-                                    //     .setState(registerMode != true
-                                    //         ? UserNeedsToRegister(
-                                    //             _logininfo, null)
-                                    //         : UserNeedsToLogin(
-                                    //             _logininfo, null)),
                                     Navigator.pop(mcontext),
                                   },
                                   child: const Text('OK'),
@@ -175,21 +166,21 @@ class LoginPage extends StatelessWidget {
                                     padding: EdgeInsets.only(bottom: 30),
                                     child: logoWidget!)
                                 : SizedBox.shrink(),
-                            Container(
-                                // width:
-                                //     MediaQuery.of(context).size.width * 2 / 3,
-                                child: GoogleLoginButton(
-                              outlined: true,
-                              externalContext: context,
-                            )),
+                            // Container(
+                            //     // width:
+                            //     //     MediaQuery.of(context).size.width * 2 / 3,
+                            //     child: GoogleLoginButton(
+                            //   outlined: true,
+                            //   externalContext: context,
+                            // )),
                             SizedBox(height: 20.0),
-                            Container(
-                                // width:
-                                //     MediaQuery.of(context).size.width * 2 / 3,
-                                child: AppleLoginButton(
-                              outlined: true,
-                              externalContext: context,
-                            )),
+                            // Container(
+                            //     // width:
+                            //     //     MediaQuery.of(context).size.width * 2 / 3,
+                            //     child: AppleLoginButton(
+                            //   outlined: true,
+                            //   externalContext: context,
+                            // )),
                             SizedBox(height: 20.0),
                             Divider(),
                             if (registerMode != true)
