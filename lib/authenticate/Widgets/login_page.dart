@@ -58,61 +58,30 @@ class LoginPage extends StatelessWidget {
             currentFocus.unfocus();
           }
         },
-        child: SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              title: Center(
-                  child: Text(
-                "Login",
-              )),
-            ),
-            body: Container(
-              child: SingleChildScrollView(
-                child: Column(children: [
-                  Consumer(builder: (context, listen, child) {
-                    var state = listen(userNotifier);
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Center(
+                child: Text(
+              "Login",
+            )),
+          ),
+          body: Container(
+            child: SingleChildScrollView(
+              child: Column(children: [
+                Consumer(builder: (context, listen, child) {
+                  var state = listen(userNotifier);
 
-                    if (state is UserNeedsToRegister) {
-                      //if regsiterMode = true, then we are already in the register page, and if the registerMode is false, that means that we force to continue even though the local storage is empty
-                      if (registerMode == null) {
-                        Timer.run(() {
-                          Navigator.pushReplacementNamed(
-                            _context,
-                            "register",
-                          );
-                        });
-                      } else {
-                        _logininfo = state.loginInfo ?? _logininfo;
-                        if (!isEmpty(state.err)) {
-                          Timer.run(() {
-                            showDialog(
-                              context: context,
-                              builder: (mcontext) => AlertDialog(
-                                title: Text("Login error"),
-                                content: Text(state.err!),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => {
-                                      // context
-                                      //     .read(userNotifier.notifier)
-                                      //     .setState(registerMode != true
-                                      //         ? UserNeedsToRegister(
-                                      //             _logininfo, null)
-                                      //         : UserNeedsToLogin(
-                                      //             _logininfo, null)),
-                                      Navigator.pop(mcontext),
-                                    },
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
-                        }
-                      }
-                      return SizedBox.shrink();
-                    } else if (state is UserNeedsToLogin) {
+                  if (state is UserNeedsToRegister) {
+                    //if regsiterMode = true, then we are already in the register page, and if the registerMode is false, that means that we force to continue even though the local storage is empty
+                    if (registerMode == null) {
+                      Timer.run(() {
+                        Navigator.pushReplacementNamed(
+                          _context,
+                          "register",
+                        );
+                      });
+                    } else {
                       _logininfo = state.loginInfo ?? _logininfo;
                       if (!isEmpty(state.err)) {
                         Timer.run(() {
@@ -124,6 +93,13 @@ class LoginPage extends StatelessWidget {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => {
+                                    // context
+                                    //     .read(userNotifier.notifier)
+                                    //     .setState(registerMode != true
+                                    //         ? UserNeedsToRegister(
+                                    //             _logininfo, null)
+                                    //         : UserNeedsToLogin(
+                                    //             _logininfo, null)),
                                     Navigator.pop(mcontext),
                                   },
                                   child: const Text('OK'),
@@ -133,122 +109,141 @@ class LoginPage extends StatelessWidget {
                           );
                         });
                       }
-                      return SizedBox.shrink();
-                    } else if (state is UserError) {
+                    }
+                    return SizedBox.shrink();
+                  } else if (state is UserNeedsToLogin) {
+                    _logininfo = state.loginInfo ?? _logininfo;
+                    if (!isEmpty(state.err)) {
                       Timer.run(() {
                         showDialog(
-                            builder: (mcontext) => AlertDialog(
-                                  title: Text("Error"),
-                                  content: Text("Error while logging in: " +
-                                      state.message),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => {
-                                        context
-                                            .read(authNotifierProviderForUser
-                                                .notifier)
-                                            .resetState(),
-                                        Navigator.pop(mcontext),
+                          context: context,
+                          builder: (mcontext) => AlertDialog(
+                            title: Text("Login error"),
+                            content: Text(state.err!),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => {
+                                  Navigator.pop(mcontext),
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                    }
+                    return SizedBox.shrink();
+                  } else if (state is UserError) {
+                    Timer.run(() {
+                      showDialog(
+                          builder: (mcontext) => AlertDialog(
+                                title: Text("Error"),
+                                content: Text(
+                                    "Error while logging in: " + state.message),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => {
+                                      context
+                                          .read(authNotifierProviderForUser
+                                              .notifier)
+                                          .resetState(),
+                                      Navigator.pop(mcontext),
 
-                                        //  Navigator.pushNamed(externalContext, "login"),
-                                      },
-                                      child: const Text('OK'),
+                                      //  Navigator.pushNamed(externalContext, "login"),
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                          context: context);
+                    });
+
+                    return SizedBox.shrink();
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                }),
+                Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            logoWidget != null
+                                ? Padding(
+                                    padding: EdgeInsets.only(bottom: 30),
+                                    child: logoWidget!)
+                                : SizedBox.shrink(),
+                            Container(
+                                // width:
+                                //     MediaQuery.of(context).size.width * 2 / 3,
+                                child: GoogleLoginButton(
+                              outlined: true,
+                              externalContext: context,
+                            )),
+                            SizedBox(height: 20.0),
+                            Container(
+                                // width:
+                                //     MediaQuery.of(context).size.width * 2 / 3,
+                                child: AppleLoginButton(
+                              outlined: true,
+                              externalContext: context,
+                            )),
+                            SizedBox(height: 20.0),
+                            Divider(),
+                            if (registerMode != true)
+                              new RichText(
+                                text: new TextSpan(
+                                  children: [
+                                    new TextSpan(
+                                      text: 'Don\'t have an account yet? ',
+                                      style: new TextStyle(
+                                          color: Colors.black, fontSize: 14),
+                                    ),
+                                    new TextSpan(
+                                      text: 'Lets create one',
+                                      style: new TextStyle(
+                                          color: Colors.blue, fontSize: 14),
+                                      recognizer: new TapGestureRecognizer()
+                                        ..onTap = () async {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            "register",
+                                          );
+                                        },
                                     ),
                                   ],
                                 ),
-                            context: context);
-                      });
-
-                      return SizedBox.shrink();
-                    } else {
-                      return SizedBox.shrink();
-                    }
-                  }),
-                  Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: SingleChildScrollView(
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              logoWidget != null
-                                  ? Padding(
-                                      padding: EdgeInsets.only(bottom: 30),
-                                      child: logoWidget!)
-                                  : SizedBox.shrink(),
-                              Container(
-                                  // width:
-                                  //     MediaQuery.of(context).size.width * 2 / 3,
-                                  child: GoogleLoginButton(
-                                outlined: true,
-                                externalContext: context,
-                              )),
-                              SizedBox(height: 20.0),
-                              Container(
-                                  // width:
-                                  //     MediaQuery.of(context).size.width * 2 / 3,
-                                  child: AppleLoginButton(
-                                outlined: true,
-                                externalContext: context,
-                              )),
-                              SizedBox(height: 20.0),
-                              Divider(),
-                              if (registerMode != true)
-                                new RichText(
-                                  text: new TextSpan(
-                                    children: [
-                                      new TextSpan(
-                                        text: 'Don\'t have an account yet? ',
-                                        style:
-                                            new TextStyle(color: Colors.black, fontSize: 14),
-                                      ),
-                                      new TextSpan(
-                                        text: 'Lets create one',
-                                        style:
-                                            new TextStyle(color: Colors.blue, fontSize: 14),
-                                        recognizer: new TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            Navigator.pushReplacementNamed(
-                                              context,
-                                              "register",
-                                            );
-                                          },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                             
-                              if (registerMode == true)
-                                TextButton(
-                                  child: Text(("Already have an account?"),
-                                      style: TextStyle(
-                                          //   color: BeStyle.darkermain,
-                                          )),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, "login",
-                                        arguments: {"registerMode": false});
-                                  },
-                                ),
-                              SizedBox(height: 10.0),
-                              UserForm(
-                                  fromRegister: registerMode ?? false,
-                                  loginInfo: _logininfo,
-                                  user: _logininfo.user!),
-                              const SizedBox(height: 20.0),
-                              registerMode == true
-                                  ? _SignUpButton(
-                                      _logininfo, _formKey, _context)
-                                  : _LoginButton(
-                                      _logininfo, _formKey, _context),
-                              SizedBox(height: 20.0),
-                              Divider(),
-                              SizedBox(height: 20.0),
-                            ],
-                          ),
+                              ),
+                            if (registerMode == true)
+                              TextButton(
+                                child: Text(("Already have an account?"),
+                                    style: TextStyle(
+                                        //   color: BeStyle.darkermain,
+                                        )),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "login",
+                                      arguments: {"registerMode": false});
+                                },
+                              ),
+                            SizedBox(height: 10.0),
+                            UserForm(
+                                fromRegister: registerMode ?? false,
+                                loginInfo: _logininfo,
+                                user: _logininfo.user!),
+                            const SizedBox(height: 20.0),
+                            registerMode == true
+                                ? _SignUpButton(_logininfo, _formKey, _context)
+                                : _LoginButton(_logininfo, _formKey, _context),
+                            SizedBox(height: 20.0),
+                            Divider(),
+                            SizedBox(height: 20.0),
+                          ],
                         ),
-                      ))
-                ]),
-              ),
+                      ),
+                    ))
+              ]),
             ),
           ),
         ),
