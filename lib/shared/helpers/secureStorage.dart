@@ -37,7 +37,7 @@ class UserLocalStorage {
 
   AuthUser? getAuthUser() {
     String? user = _storage.getString("AuthUser");
-    return user == null ? null : AuthUser.fromString(user);
+    return user == null ? null : AuthUser.empty.fromString(user);
   }
 
   Future setLanguage(String locale) async {

@@ -56,9 +56,9 @@ class AuthUser {
     return json.encode(this.toJson(), toEncodable: myDateSerializer);
   }
 
-  AuthUser.fromString(String str) {
+  AuthUser fromString(String str) {
     var x = json.decode(str);
-    AuthUser.fromJson(x);
+    return AuthUser.fromJson(x);
   }
 
   Map<String, dynamic> toJson() => {
