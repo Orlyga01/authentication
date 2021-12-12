@@ -74,7 +74,6 @@ class LoginPage extends StatelessWidget {
                     var state = listen(userNotifier);
 
                     if (state is UserNeedsToRegister) {
-                      context.read(userNotifier.notifier).setState(IdleState());
                       //if regsiterMode = true, then we are already in the register page, and if the registerMode is false, that means that we force to continue even though the local storage is empty
                       if (registerMode == null) {
                         Timer.run(() {
@@ -114,7 +113,6 @@ class LoginPage extends StatelessWidget {
                       }
                       return SizedBox.shrink();
                     } else if (state is UserNeedsToLogin) {
-                      context.read(userNotifier.notifier).setState(IdleState());
                       _logininfo = state.loginInfo ?? _logininfo;
                       if (!isEmpty(state.err)) {
                         Timer.run(() {
