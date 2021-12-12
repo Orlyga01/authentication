@@ -29,7 +29,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       }
       login(logininfo, keepExternal: true);
     } catch (e) {
-      state = Unauthenticated(e.toString(), logininfo);
+      state = AuthenticationFailed(e.toString(), logininfo);
     }
   }
 
@@ -100,7 +100,7 @@ class AuthenticationController {
       log("after credentials success");
       return Authenticated(userc.user!, logininfo);
     } catch (e) {
-      return Unauthenticated(e.toString(), logininfo);
+      return AuthenticationFailed(e.toString(), logininfo);
     }
   }
 
