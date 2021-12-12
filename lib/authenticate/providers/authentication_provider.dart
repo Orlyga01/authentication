@@ -96,7 +96,7 @@ class AuthenticationController {
       if (isDifferentLoginUser(userc))
         await UserLocalStorage()
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
-      await UserLocalStorage().setKeyValue("", "false");
+      await UserLocalStorage().setKeyValue("LoggedOut", "false");
       log("after credentials success");
       return Authenticated(userc.user!, logininfo);
     } catch (e) {
