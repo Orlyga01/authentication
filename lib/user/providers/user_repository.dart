@@ -11,12 +11,12 @@ class FirebaseUserRepository {
     return _dbUser;
   }
 
-  Future<String> add(AuthUser user) async {
+  Future<AuthUser> add(AuthUser user) async {
     user.createdAt = DateTime.now();
     user.modifiedAt = DateTime.now();
     // the user id should be the same as the authenticated userid
     var val = await _userCollection.doc(user.id).set(user.toJson());
-    return user.id;
+    return user;
   }
 
   Future<void> delete(AuthUser user) {

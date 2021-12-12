@@ -70,10 +70,10 @@ class UserNotifier extends StateNotifier<UserState> {
   }
 // This is to initiate the listeners
 
-  Future<String?> addUser(AuthUser user) async {
-    String? retStr = await UserController().addUser(user);
-    if (retStr == "missingPersonInfo") state = UserMissingInfo(user);
-    return retStr;
+  Future<AuthUser?> addUser(AuthUser user) async {
+    return UserController().addUser(user);
+    // if (retStr == "missingPersonInfo") state = UserMissingInfo(user);
+    // return retStr;
   }
 
   Future<String?> completeUserMissingInfoAfterAuthenticate(
@@ -136,7 +136,7 @@ class UserController {
       User authUser, LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
-      if (user == null ) {
+      if (user == null) {
         user = await UserController().getUserById(authUser.uid);
         //This is a new user - and we need to get him into the system
         //However, it might be that the user's information
@@ -157,13 +157,13 @@ class UserController {
               : loginInfo?.user?.displayName,
         );
         try {
-          String? userid = await addUser(newUser);
-          if (userid == null) throw "Couldnt create a user";
-          UserController().setUserInController(newUser);
-          if (newUser.isInfoMissing) return UserMissingInfo(newUser);
+          AuthUser? addedUser = await addUser(newUser);
+          if (addedUser == null) throw "Couldnt create a user";
+          UserController().setUserInController(addedUser);
+          if (addedUser.isInfoMissing) return UserMissingInfo(addedUser);
           _isLoggedIn = true;
-          UserLocalStorage().setAuthUser(newUser);
-          return UserLoaded(newUser, "userAdded");
+          UserLocalStorage().setAuthUser(addedUser);
+          return UserLoaded(addedUser, "userAdded");
         } catch (e) {
           UserError(e.toString());
         }
@@ -204,10 +204,10 @@ class UserController {
     return _user;
   }
 
-  Future<String?> addUser(AuthUser user) async {
+  Future<AuthUser?> addUser(AuthUser user) async {
     try {
       await _userRepository.add(user);
-      return user.id;
+      return user;
     } catch (e) {
       throw e.toString();
     }
