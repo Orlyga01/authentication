@@ -41,7 +41,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
-    if (logininfo.loggedOut != true &&
+    if (logininfo.loggedOut == false &&
         !fromRegister &&
         logininfo.outerUser != null) {
       state = Authenticated(logininfo.outerUser!, logininfo);
@@ -101,7 +101,7 @@ class AuthenticationController {
       if (isDifferentLoginUser(userc))
         await UserLocalStorage()
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
-      await UserLocalStorage().setKeyValue("LoggedOut", "false");
+      await UserLocalStorage().setKeyValue("loggedOut", "false");
       log("after credentials success");
       return Authenticated(userc.user!, logininfo);
     } catch (e) {
