@@ -79,7 +79,7 @@ class FirebaseAuthRepository {
   ///
   /// Throws a [LogInWithEmailAndPasswordFailure] if an exception occurs.
   Future<UserCredential?> logInWithEmailAndPassword(LoginInfo info) async {
-    if (info.email != null) {
+    if (info.email != null && info.password != null) {
       try {
         UserCredential uc = await _firebaseAuth.signInWithEmailAndPassword(
             email: info.email!, password: info.password!);

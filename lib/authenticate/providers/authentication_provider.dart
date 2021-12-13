@@ -47,8 +47,9 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       state = Authenticated(logininfo.outerUser!, logininfo);
     }
     await UserLocalStorage().setLoginData(logininfo);
-    state = await AuthenticationController()
-        .checkCredentials(logininfo, fromRegister);
+    if (logininfo.email != null && logininfo.password != null)
+      state = await AuthenticationController()
+          .checkCredentials(logininfo, fromRegister);
   }
 
   Future<void> GoogleLogin() async {
