@@ -50,6 +50,8 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     if (logininfo.email != null && logininfo.password != null)
       state = await AuthenticationController()
           .checkCredentials(logininfo, fromRegister);
+    else
+      state = Unauthenticated("", logininfo);
   }
 
   Future<void> GoogleLogin() async {
