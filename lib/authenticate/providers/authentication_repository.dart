@@ -172,6 +172,8 @@ class FirebaseAuthRepository {
       FirebaseAuthException error) {
     if (!isEmpty(error.code)) {
       switch (error.code) {
+        case 'network-request-failed':
+          return 'Please check your network';
         case 'user-not-found':
           return 'Email was not found. Check your email and try again';
         case 'wrong-password':
