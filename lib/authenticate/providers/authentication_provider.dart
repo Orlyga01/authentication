@@ -19,7 +19,10 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     try {
       await UserLocalStorage().init();
       logininfo = UserLocalStorage().getLoginData();
-
+      if (logininfo.loggedOut == false)
+        state = logininfo.outerUser == null
+            ? NeedToLogin(logininfo)
+            : Authenticated(logininfo.outerUser!, logininfo);
       if (logininfo.uid == null || logininfo.loggedOut == null) {
         state = NeedToRegister(null);
         return;
