@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:authentication/authenticate/Widgets/apple_widgets.dart';
 import 'package:authentication/authenticate/Widgets/google_widgets.dart';
 import 'package:authentication/shared/common_auth_functions.dart';

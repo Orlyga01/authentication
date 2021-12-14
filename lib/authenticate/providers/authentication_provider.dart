@@ -1,10 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
-
+import 'dart:async';
 import 'package:authentication/authentication.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
-import 'package:authentication/authenticate/models/login.dart';
-import 'package:authentication/authenticate/providers/import_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -22,8 +20,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       if (logininfo.loggedOut == false) {
         if (logininfo.outerUser == null) {
           UserController().init();
-          Timer.run(() =>           state = NeedToLogin(logininfo);
-          );
+          Timer.run(() => state = NeedToLogin(logininfo));
         } else
           Authenticated(logininfo.outerUser!, logininfo);
         return;
