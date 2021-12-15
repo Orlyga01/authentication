@@ -189,10 +189,10 @@ class AuthenticationController {
   Future<void> afterExternalLogin(UserCredential userc) async {
     String? personid;
     //check if user exists in the app
-    if (isDifferentLoginUser(userc)) {
-      await UserLocalStorage()
-          .setLoginData(convertUserCredentialsToLoginInfo(userc, true));
-    }
+
+    await UserLocalStorage()
+        .setLoginData(convertUserCredentialsToLoginInfo(userc, true));
+
     UserLocalStorage().setKeyValue("loggedOut", "false");
   }
 
