@@ -18,11 +18,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       await UserLocalStorage().init();
       logininfo = UserLocalStorage().getLoginData();
       if (logininfo.loggedOut == false) {
-        if (logininfo.outerUser == null) {
-          UserController().init();
-          Timer.run(() => state = NeedToLogin(logininfo));
-        } else
-          Authenticated(logininfo.outerUser!, logininfo);
+        Authenticated(null, logininfo);
         return;
       }
       if (logininfo.uid == null || logininfo.loggedOut == null) {
@@ -46,10 +42,8 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
       {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
-    if (logininfo.loggedOut == false &&
-        !fromRegister &&
-        logininfo.outerUser != null) {
-      state = Authenticated(logininfo.outerUser!, logininfo);
+    if (logininfo.loggedOut == false && !fromRegister) {
+      state = Authenticated(null, logininfo);
     }
     await UserLocalStorage().setLoginData(logininfo);
     if (logininfo.email != null && logininfo.password != null)
@@ -183,7 +177,7 @@ class AuthenticationController {
         uid: userc.user!.uid,
         phone: userc.user!.phoneNumber,
         externalLogin: exteranLogin,
-        outerUser: userc.user!);
+        );
   }
 
   Future<void> afterExternalLogin(UserCredential userc) async {

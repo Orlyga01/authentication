@@ -11,7 +11,6 @@ class LoginInfo {
   bool? externalLogin;
   bool? loggedOut;
   String? confirmedPassword;
-  User? outerUser;
   AuthUser? user = AuthUser.empty;
 
   String? role; //superAdmin, admin
@@ -22,7 +21,6 @@ class LoginInfo {
       this.name,
       this.externalLogin = false,
       this.user,
-      this.outerUser,
       this.uid});
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +30,6 @@ class LoginInfo {
         'name': name,
         'uid': uid,
         'externalLogin': externalLogin,
-        'outerUser': outerUser,
         'user': user?.toJson()
       };
   LoginInfo.fromJson(Map<String, dynamic> json)
@@ -42,7 +39,6 @@ class LoginInfo {
         name = json["name"],
         uid = json["uid"],
         externalLogin = json["externalLogin"],
-        outerUser = json["outerUser"],
         user = AuthUser.fromJson(json["user"]);
   static final RegExp _emailRegExp = RegExp(
     r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',

@@ -14,7 +14,7 @@ abstract class AuthenticationState extends Equatable {
 class Uninitialized extends AuthenticationState {}
 
 class Authenticated extends AuthenticationState {
-  final User user;
+  final User? user;
   final LoginInfo? logininfo;
 
   const Authenticated(
@@ -22,18 +22,10 @@ class Authenticated extends AuthenticationState {
     this.logininfo,
   );
 
-  @override
-  List<Object> get props => [
-        user,
-      ];
-
+ 
   @override
   String toString() => 'Authenticated { userId: $user }';
 }
-
-
-
-
 
 class SignUpCompleted extends AuthenticationState {
   final AuthUser user;

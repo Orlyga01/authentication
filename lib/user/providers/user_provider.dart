@@ -56,7 +56,7 @@ class UserNotifier extends StateNotifier<UserState> {
     return (lo == '' || lo == "true");
   }
 
-  setUserAfterAuthentication(User muser, LoginInfo? logininfo) async {
+  setUserAfterAuthentication(User? muser, LoginInfo? logininfo) async {
     try {
       UserState newState =
           await UserController().setUserAfterAuthentication(muser, logininfo);
@@ -133,15 +133,22 @@ class UserController {
   }
 
   Future<UserState> setUserAfterAuthentication(
-      User authUser, LoginInfo? loginInfo) async {
+      User? authUser, LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
       if (user == null) {
-        user = await UserController().getUserById(authUser.uid);
+        String? userid = authUser != null
+            ? authUser.uid
+            : (loginInfo != null && loginInfo.uid != null)
+                ? loginInfo.uid
+                : null;
+        if (userid != null) user = await UserController().getUserById(userid);
         //This is a new user - and we need to get him into the system
         //However, it might be that the user's information
       }
       if (user == null) {
+        if (authUser == null)
+          throw "User from External Authentication system is empty";
         AuthUser newUser = AuthUser(
           id: authUser.uid,
           email:
