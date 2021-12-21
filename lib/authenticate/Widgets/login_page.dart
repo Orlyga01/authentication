@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
       registerMode = false;
     }
     _context = context;
-
+// this is sent from the joinmom flow
     LoginInfo _logininfo = loginInfo != null
         ? loginInfo!
         : AuthenticationController().getLoginInfoFromLocal();
