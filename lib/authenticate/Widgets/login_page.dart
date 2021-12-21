@@ -11,6 +11,7 @@ import 'login_form.dart';
 
 class LoginPage extends StatelessWidget {
   final Map<String, dynamic>? moreInfo;
+  final LoginInfo? loginInfo;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool? registerMode;
   final Widget? logoWidget;
@@ -19,6 +20,7 @@ class LoginPage extends StatelessWidget {
     this.logoWidget,
     this.moreInfo,
     this.registerMode,
+    this.loginInfo,
   }) : super(key: key);
   late BuildContext _context;
 
@@ -28,7 +30,10 @@ class LoginPage extends StatelessWidget {
       registerMode = false;
     }
     _context = context;
-    LoginInfo _logininfo = AuthenticationController().getLoginInfoFromLocal();
+
+    LoginInfo _logininfo = loginInfo != null
+        ? loginInfo!
+        : AuthenticationController().getLoginInfoFromLocal();
     AuthUser _loginUser = AuthUser(
         id: _logininfo.uid ?? "",
         displayName: _logininfo.name,
@@ -138,7 +143,6 @@ class LoginPage extends StatelessWidget {
                                               .notifier)
                                           .resetState(),
                                       Navigator.pop(mcontext),
-
                                     },
                                     child: const Text('OK'),
                                   ),
