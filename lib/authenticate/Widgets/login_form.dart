@@ -1,5 +1,6 @@
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/shared/auth_constants.dart';
+import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/import_user.dart';
 
 import 'package:flutter/material.dart';
@@ -47,14 +48,14 @@ class _UserFormState extends State<UserForm> {
                           : widget.user.displayName ?? '',
                   keyboardType: TextInputType.name,
                   decoration: InputDecoration(
-                    hintText: ("Name"),
+                    hintText: ("Name".ctr()),
                   ),
                   onChanged: (String inputString) {
                     widget.user.displayName = inputString;
                   },
                   validator: (value) {
                     if (value != null && value.isEmpty) {
-                      return "missing Name";
+                      return "missing Name".ctr();
                     } else {
                       widget.user.displayName = value!;
                     }
@@ -69,7 +70,7 @@ class _UserFormState extends State<UserForm> {
                   initialValue: widget.user.phone ?? '',
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: ("Mobile Phone"),
+                    hintText: ("Mobile Phone".ctr()),
                   ),
                   onChanged: (value) => {
                         widget.user.phone = value,
@@ -77,7 +78,7 @@ class _UserFormState extends State<UserForm> {
                       },
                   validator: (value) {
                     if ((value == null || value.length == 0))
-                      return "missing phone";
+                      return "missing phone".ctr();
                   }),
             ),
           Directionality(
@@ -95,7 +96,7 @@ class _UserFormState extends State<UserForm> {
                             : widget.user.email,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: ("Email"),
+                          hintText: ("Email".ctr()),
                           //   prefixIcon: Icon(Icons.star_rate, size: 10, color: Colors.red),
                         ),
                         onChanged: (String inputString) {
@@ -124,7 +125,7 @@ class _UserFormState extends State<UserForm> {
                         obscureText: true,
                         decoration: InputDecoration(
                           errorMaxLines: 2,
-                          hintText: ("Password"),
+                          hintText: ("Password".ctr() ),
                         ),
                         onChanged: (String inputString) {
                           widget.loginInfo!.password = inputString;
@@ -144,7 +145,7 @@ class _UserFormState extends State<UserForm> {
                         obscureText: true,
                         textDirection: ui.TextDirection.ltr,
                         decoration: InputDecoration(
-                          hintText: ("Confirm Password"),
+                          hintText: ("Confirm Password".ctr()),
                           // prefixIcon:
                           //     Icon(Icons.star_rate, size: 10, color: Colors.red),
                           // prefixIconConstraints: BoxConstraints(
@@ -160,7 +161,7 @@ class _UserFormState extends State<UserForm> {
                               '') {
                             widget.loginInfo!.confirmedPassword = value;
                           } else {
-                            return ("Password") + " " + ("doesn't match");
+                            return ("Password".ctr()) + " " + ("doesn't match".ctr());
                           }
                           return null;
                         }),
@@ -172,7 +173,7 @@ class _UserFormState extends State<UserForm> {
             Container(
               padding: EdgeInsets.only(top: 20),
               child: GestureDetector(
-                child: Text("Forgot password?"),
+                child: Text("Forgot password?".ctr()),
                 onTap: () {
                   Navigator.pushNamed(context, "reset_password",
                       arguments: {"email": widget.user.email});

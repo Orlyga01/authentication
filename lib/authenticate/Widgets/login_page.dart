@@ -65,7 +65,7 @@ class LoginPage extends StatelessWidget {
             automaticallyImplyLeading: false,
             title: Center(
                 child: Text(
-              "Login",
+              "Login".ctr(),
             )),
           ),
           body: Container(
@@ -90,7 +90,7 @@ class LoginPage extends StatelessWidget {
                           showDialog(
                             context: context,
                             builder: (mcontext) => AlertDialog(
-                              title: Text("Login error"),
+                              title: Text("Login error".ctr()),
                               content: Text(state.err!),
                               actions: <Widget>[
                                 TextButton(
@@ -113,14 +113,14 @@ class LoginPage extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (mcontext) => AlertDialog(
-                            title: Text("Login error"),
+                            title: Text("Login error".ctr()),
                             content: Text(state.err!),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () => {
                                   Navigator.pop(mcontext),
                                 },
-                                child: const Text('OK'),
+                                child: Text('OK'.ctr()),
                               ),
                             ],
                           ),
@@ -132,9 +132,9 @@ class LoginPage extends StatelessWidget {
                     Timer.run(() {
                       showDialog(
                           builder: (mcontext) => AlertDialog(
-                                title: Text("Error"),
-                                content: Text(
-                                    "Error while logging in: " + state.message),
+                                title: Text("Error".ctr()),
+                                content: Text("Error while logging in: ".ctr() +
+                                    state.message.ctr()),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () => {
@@ -144,7 +144,7 @@ class LoginPage extends StatelessWidget {
                                           .resetState(),
                                       Navigator.pop(mcontext),
                                     },
-                                    child: const Text('OK'),
+                                    child: Text('OK'.ctr()),
                                   ),
                                 ],
                               ),
@@ -190,12 +190,13 @@ class LoginPage extends StatelessWidget {
                                 text: new TextSpan(
                                   children: [
                                     new TextSpan(
-                                      text: 'Don\'t have an account yet? ',
+                                      text:
+                                          'Don\'t have an account yet? '.ctr(),
                                       style: new TextStyle(
                                           color: Colors.black, fontSize: 14),
                                     ),
                                     new TextSpan(
-                                      text: 'Lets create one',
+                                      text: 'Lets create one'.ctr(),
                                       style: new TextStyle(
                                           color: Colors.blue, fontSize: 14),
                                       recognizer: new TapGestureRecognizer()
@@ -210,8 +211,8 @@ class LoginPage extends StatelessWidget {
                                 ),
                               ),
                             if (registerMode == true)
-                              TextButton(
-                                child: Text(("Already have an account?"),
+                              OutlinedButton(
+                                child: Text(("Already have an account?".ctr()),
                                     style: TextStyle(
                                         //   color: BeStyle.darkermain,
                                         )),
@@ -265,7 +266,7 @@ class _LoginButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Login",
+                "Login".ctr(),
               ),
               SizedBox(width: 10),
               Consumer(builder: (context, ScopedReader watch, child) {
@@ -304,7 +305,7 @@ class _SignUpButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Register",
+                "Register".ctr(),
               ),
               SizedBox(width: 10),
               Consumer(builder: (context, ScopedReader watch, child) {

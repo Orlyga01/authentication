@@ -1,4 +1,5 @@
 import 'package:authentication/authenticate/Widgets/login_form.dart';
+import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/import_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,7 @@ class MissingUserInfo extends StatelessWidget {
 
     TextEditingController phoneCont = TextEditingController();
     return AlertDialog(
-      title: Text("Please Complete:"),
+      title: Text("Please Complete:".ctr()),
       content: Container(
         child: Form(key: formKey, child: UserForm(user: this.user)),
       ),
@@ -38,10 +39,10 @@ class MissingUserInfo extends StatelessWidget {
               }
               //  }
             },
-            child: Text("Save")),
+            child: Text("Save".ctr())),
         OutlinedButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text("Cancel")),
+            child: Text("Cancel".ctr())),
       ],
     );
   }
@@ -63,13 +64,13 @@ Future<bool> checkUserValidity(AuthUser newUser, context) async {
           // return object of type Dialog
 
           return AlertDialog(
-              title: Text("email or phone are already being used by: " +
+              title: Text("Email or phone are already being used by: ".ctr() +
                   foundUser.displayName!.substring(0, 3) +
                   ' **** '),
               actions: [
                 OutlinedButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: Text("OK")),
+                    child: Text("OK".ctr())),
               ]);
         });
     return false;

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:authentication/authenticate/providers/authentication_state.dart';
+import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,11 +22,11 @@ class GoogleLoginButton extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-                                               // String? screen = currentPage(GlobalKey<NavigatorState>()),
+    // String? screen = currentPage(GlobalKey<NavigatorState>()),
 
     return Consumer(builder: (context, ScopedReader watch, child) {
       final state = watch(authNotifierProviderForUser);
-      
+
       return OutlinedButton(
           style: OutlinedButton.styleFrom(
               backgroundColor: !outlined ? mainColor : Colors.white),
@@ -34,7 +35,7 @@ class GoogleLoginButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Sign in with Google',
+                'Sign in with Google'.ctr(),
                 style: TextStyle(
                   color: outlined ? textColor : Colors.white,
                 ),

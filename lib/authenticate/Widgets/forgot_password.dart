@@ -1,6 +1,7 @@
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/authenticate/providers/authentication_provider.dart';
 import 'package:authentication/shared/auth_widgets.dart';
+import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
@@ -24,14 +25,14 @@ class ForgotPasswordPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'yourEmail',
+                'Your Email'.ctr(),
                 style: TextStyle(fontSize: 30, color: Colors.white),
               ),
               TextFormField(
                   initialValue: email,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: ("Email"),
+                    hintText: ("Email".ctr()),
                     //  prefixIcon:
                     //    Icon(Icons.star_rate, size: 10, color: Colors.red),
                     prefixIconConstraints: BoxConstraints(
@@ -51,13 +52,13 @@ class ForgotPasswordPage extends StatelessWidget {
                   }),
               SizedBox(height: 20),
               OutlinedButton(
-                child: Text('Send Email'),
+                child: Text('Send Email'.ctr()),
                 onPressed: () async {
                   await sendResetEmail(context);
                 },
               ),
               OutlinedButton(
-                child: Text('Sign In'),
+                child: Text('Login'.ctr()),
                 onPressed: () {},
               )
             ],
@@ -77,9 +78,9 @@ class ForgotPasswordPage extends StatelessWidget {
             builder: (BuildContext context) {
               // return object of type Dialog
               return AlertDialog(
-                title: Text(err != "" ? "Error" : "Email sent"),
-                content:
-                    Text(err != "" ? err : ('Email was sent to: ') + email!),
+                title: Text(err != "" ? "Error".ctr() : "Email sent".ctr()),
+                content: Text(
+                    err != "" ? err : ('Email was sent to: '.ctr()) + email!),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -87,7 +88,7 @@ class ForgotPasswordPage extends StatelessWidget {
                       nav.pop();
                       nav.pop();
                     },
-                    child: const Text('OK'),
+                    child: Text('OK'.ctr()),
                   ),
                 ],
               );
