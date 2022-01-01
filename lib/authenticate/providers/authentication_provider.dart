@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'package:authentication/authentication.dart';
+import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -155,13 +156,32 @@ class AuthenticationController {
         idToken: credential.identityToken,
         accessToken: credential.authorizationCode,
       );
-
+//Returnhere--------------------
+// final userCredential =
+//           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
+//       if (userCredential != null) {
+//         await afterExternalLogin(userCredential);
+//         return Authenticated(userCredential.user!, null);
+//----------------------
 // Use the OAuthCredential to sign in to Firebase.
       final userCredential =
           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
       if (userCredential != null) {
         await afterExternalLogin(userCredential);
-        return Authenticated(userCredential.user!, null);
+        String email = isEmpty(userCredential.user?.email)
+            ? "apple@email.com"
+            : userCredential.user!.email!;
+        String name = isEmpty(userCredential.user?.displayName)
+            ? "appleName"
+            : userCredential.user!.displayName!;
+        String phone = isEmpty(userCredential.user?.phoneNumber)
+            ? "098887665"
+            : userCredential.user!.phoneNumber!;
+
+        LoginInfo li = LoginInfo(
+            user: AuthUser(
+                email: email, phone: phone, displayName: name, id: ''));
+        return Authenticated(userCredential.user!, li);
       } else {
         return AuthenticationFailed("Apple Login failed");
       }

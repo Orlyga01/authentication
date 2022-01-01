@@ -16,6 +16,7 @@ class Uninitialized extends AuthenticationState {}
 class Authenticated extends AuthenticationState {
   final User? user;
   final LoginInfo? logininfo;
+  
 
   const Authenticated(
     this.user,

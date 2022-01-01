@@ -133,6 +133,7 @@ class UserController {
   }
 
   Future<UserState> setUserAfterAuthentication(
+    //REMOVE Afgter IOS
       User? authUser, LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
@@ -149,6 +150,7 @@ class UserController {
       if (user == null) {
         if (authUser == null)
           throw "User from External Authentication system is empty";
+          //TOBE REMOVE
         AuthUser newUser = AuthUser(
           id: authUser.uid,
           email:
