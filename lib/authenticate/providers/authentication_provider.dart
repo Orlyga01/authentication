@@ -180,7 +180,7 @@ class AuthenticationController {
 
         LoginInfo li = LoginInfo(
             user: AuthUser(
-                email: email, phone: phone?? "0000000", displayName: name?? "missing", id: ''));
+                email: email, phone: phone, displayName: name, id: ''));
         return Authenticated(userCredential.user!, li);
       } else {
         return AuthenticationFailed("Apple Login failed");
