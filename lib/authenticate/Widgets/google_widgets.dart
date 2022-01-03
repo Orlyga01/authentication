@@ -13,7 +13,7 @@ class GoogleLoginButton extends StatelessWidget {
 
   final BuildContext externalContext;
   const GoogleLoginButton(
-      {Key? key,p
+      {Key? key,
       this.outlined = false,
       required this.externalContext,
       this.mainColor = Colors.grey,
