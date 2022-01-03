@@ -16,6 +16,7 @@ class AuthUser {
   UserSettings? settings;
   String? oneSignalPlayers;
   String? role;
+  bool? isSuperAdmin;
 
   String validate() {
     if (email == null && phone == null)
@@ -33,6 +34,7 @@ class AuthUser {
       this.modifiedAt,
       this.settings,
       this.oneSignalPlayers,
+      this.isSuperAdmin,
       this.role});
 
   AuthUser.fromJson(Map<String, dynamic> json)
@@ -41,6 +43,7 @@ class AuthUser {
         email = json['email'],
         phone = json['phone'],
         image = json['image'],
+        isSuperAdmin = json['isSuperAdmin'],
         oneSignalPlayers = json['oneSignalPlayers'],
         role = json['role'],
         settings = json["settings"] != null
@@ -71,6 +74,7 @@ class AuthUser {
         'image': image,
         'modifiedAt': modifiedAt?.millisecondsSinceEpoch,
         'role': role,
+        'isSuperAdmin': isSuperAdmin,
         'settings': settings?.toJson()
       };
   static get empty {
@@ -80,6 +84,8 @@ class AuthUser {
   bool get isInfoMissing {
     return isEmpty(displayName) || isEmpty(phone) || isEmpty(email);
   }
+
+  bool get isAdmin => this.isSuperAdmin == true;
 }
 
 class UserSettings {
