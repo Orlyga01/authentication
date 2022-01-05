@@ -132,12 +132,14 @@ class UserController {
     if (foundUser != null && foundUser.id != userid) return foundUser;
   }
 
-Future<UserState>   setUserAfterAuthentication(
-    //REMOVE Afgter IOS
-      User? authUser, LoginInfo? loginInfo) async {
+  Future<UserState> setUserAfterAuthentication(
+      //REMOVE Afgter IOS
+      User? authUser,
+      LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
-      if (user == null || user!.email != loginInfo?.email) {
+      //user = null;
+      if (user == null || user.email != loginInfo?.email) {
         String? userid = authUser != null
             ? authUser.uid
             : (loginInfo != null && loginInfo.uid != null)
@@ -150,7 +152,7 @@ Future<UserState>   setUserAfterAuthentication(
       if (user == null) {
         if (authUser == null)
           throw "User from External Authentication system is empty";
-          //TOBE REMOVE
+        //TOBE REMOVE
         AuthUser newUser = AuthUser(
           id: authUser.uid,
           email:

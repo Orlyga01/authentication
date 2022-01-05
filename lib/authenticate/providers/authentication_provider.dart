@@ -195,6 +195,7 @@ class AuthenticationController {
     return LoginInfo(
       email: userc.user!.email,
       uid: userc.user!.uid,
+      name: userc.user!.displayName,
       phone: userc.user!.phoneNumber,
       externalLogin: exteranLogin,
     );
