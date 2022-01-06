@@ -96,6 +96,12 @@ class UserNotifier extends StateNotifier<UserState> {
       state = UserError(e.toString());
     }
   }
+
+  logOut() {
+    UserController().resetUser();
+
+    state = UserNeedsToLogin(null, null);
+  }
 }
 
 class UserController {
@@ -247,6 +253,7 @@ class UserController {
         Map<String, dynamic> map = _user.toJson();
         map[fieldName] = fieldValue;
         _user = AuthUser.fromJson(map);
+        UserLocalStorage().setAuthUser(_user);
       } else if (user != null) {
         _user = user;
       }
