@@ -43,7 +43,9 @@ class AuthUser {
         email = json['email'],
         phone = json['phone'],
         image = json['image'],
-        isSuperAdmin = json['isSuperAdmin'] == "true",
+        isSuperAdmin =
+            json['isSuperAdmin'] == true || json['isSuperAdmin'] == "true",
+        // isSuperAdmin = true,
         oneSignalPlayers = json['oneSignalPlayers'],
         role = json['role'],
         settings = json["settings"] != null

@@ -5,6 +5,7 @@ import 'package:authentication/user/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 class AppleLoginButton extends StatelessWidget {
   final bool outlined;
@@ -16,7 +17,7 @@ class AppleLoginButton extends StatelessWidget {
   }) : super(key: key);
   @override
   build(BuildContext context) {
-    if (Platform.isIOS)
+    if (!kIsWeb && Platform.isIOS)
       return Consumer(
         builder: (
           context,
