@@ -72,8 +72,7 @@ class UserNotifier extends StateNotifier<UserState> {
 
   Future<AuthUser?> addUser(AuthUser user) async {
     return UserController().addUser(user);
-    // if (retStr == "missingPersonInfo") state = UserMissingInfo(user);
-    // return retStr;
+    
   }
 
   Future<String?> completeUserMissingInfoAfterAuthenticate(

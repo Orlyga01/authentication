@@ -40,7 +40,9 @@ class LoginPage extends StatelessWidget {
         email: _logininfo.email,
         phone: _logininfo.phone);
     _logininfo.user = _loginUser;
-    if (moreInfo != null && moreInfo!["missingInfo"] == true) {
+    if (moreInfo != null &&
+        moreInfo!["missingInfo"] == true &&
+        !AuthenticationController().fromApple) {
       Timer.run(() {
         showDialog(
           context: context,

@@ -82,7 +82,8 @@ class AuthenticationController {
   factory AuthenticationController() {
     return _groupC;
   }
-
+  bool _fromApple = false;
+  bool get fromApple => _fromApple;
   Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
       [bool fromRegister = false, bool authByPhone = false]) async {
     UserCredential? userc;
@@ -181,6 +182,8 @@ class AuthenticationController {
         LoginInfo li = LoginInfo(
             user: AuthUser(
                 email: email, phone: phone, displayName: name, id: ''));
+        _fromApple = true;
+
         return Authenticated(userCredential.user!, li);
       } else {
         return AuthenticationFailed("Apple Login failed");
