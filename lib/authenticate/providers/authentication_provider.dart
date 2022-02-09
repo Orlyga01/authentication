@@ -131,7 +131,6 @@ class AuthenticationController {
           AppleIDAuthorizationScopes.fullName,
         ],
         webAuthenticationOptions: WebAuthenticationOptions(
-          // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
           clientId: 'OrlyReznikAppleLogin',
           redirectUri: Uri.parse(
             'https://com.bemember.glitch.me/callbacks/sign_in_with_apple',

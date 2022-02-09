@@ -72,7 +72,6 @@ class UserNotifier extends StateNotifier<UserState> {
 
   Future<AuthUser?> addUser(AuthUser user) async {
     return UserController().addUser(user);
-    
   }
 
   Future<String?> completeUserMissingInfoAfterAuthenticate(
@@ -203,6 +202,7 @@ class UserController {
     _user = user;
   }
 
+  bool get fromApple => _user.email!.indexOf('leid.com') > -1;
   Future<AuthUser?> getUserById(String id) async {
     return _userRepository.get(id);
   }
