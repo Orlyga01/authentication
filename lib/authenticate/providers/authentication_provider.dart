@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
+import 'dart:math';
 import 'package:authentication/authentication.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -116,54 +119,93 @@ class AuthenticationController {
     return oldLogin.uid != userc.user!.uid;
   }
 
-  Future<AuthenticationState> appleLogin() async {
-    if (!await SignInWithApple.isAvailable()) {
-      return AuthenticationFailed(
-        'This Device is not eligible for Apple Sign in',
-      ); //Break from the program
-    }
+//   Future<AuthenticationState> appleLogin() async {
+//     if (!await SignInWithApple.isAvailable()) {
+//       return AuthenticationFailed(
+//         'This Device is not eligible for Apple Sign in',
+//       ); //Break from the program
+//     }
 
-    try {
-      AuthorizationCredentialAppleID credential =
-          await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-        webAuthenticationOptions: WebAuthenticationOptions(
-          clientId: 'OrlyReznikAppleLogin',
-          redirectUri: Uri.parse(
-            'https://com.bemember.glitch.me/callbacks/sign_in_with_apple',
-          ),
-        ),
-      );
-      final signInWithAppleEndpoint = Uri(
-        scheme: 'https',
-        host: 'com.bemember.glitch.me',
-        path: '/sign_in_with_apple',
-        queryParameters: <String, String>{
-          'code': credential.authorizationCode,
-          if (credential.givenName != null) 'firstName': credential.givenName!,
-          if (credential.familyName != null) 'lastName': credential.familyName!,
-          'useBundleId': Platform.isIOS || Platform.isMacOS ? 'true' : 'false',
-          if (credential.state != null) 'state': credential.state!,
-        },
-      );
-      final session = await http.Client().post(
-        signInWithAppleEndpoint,
-      );
-      final oAuthCredential = OAuthProvider('apple.com').credential(
-        idToken: credential.identityToken,
-        accessToken: credential.authorizationCode,
-      );
-//Returnhere--------------------
-// final userCredential =
+//     try {
+//       AuthorizationCredentialAppleID credential =
+//           await SignInWithApple.getAppleIDCredential(
+//         scopes: [
+//           AppleIDAuthorizationScopes.email,
+//           AppleIDAuthorizationScopes.fullName,
+//         ],
+//         webAuthenticationOptions: WebAuthenticationOptions(
+//           clientId: 'OrlyReznikAppleLogin',
+//           redirectUri: Uri.parse(
+//             'https://com.bemember.glitch.me/callbacks/sign_in_with_apple',
+//           ),
+//         ),
+//       );
+//       final signInWithAppleEndpoint = Uri(
+//         scheme: 'https',
+//         host: 'com.bemember.glitch.me',
+//         path: '/sign_in_with_apple',
+//         queryParameters: <String, String>{
+//           'code': credential.authorizationCode,
+//           if (credential.givenName != null) 'firstName': credential.givenName!,
+//           if (credential.familyName != null) 'lastName': credential.familyName!,
+//           'useBundleId': Platform.isIOS || Platform.isMacOS ? 'true' : 'false',
+//           if (credential.state != null) 'state': credential.state!,
+//         },
+//       );
+//       final session = await http.Client().post(
+//         signInWithAppleEndpoint,
+//       );
+//       final oAuthCredential = OAuthProvider('apple.com').credential(
+//         idToken: credential.identityToken,
+//         accessToken: credential.authorizationCode,
+//       );
+
+//       final userCredential =
 //           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
 //       if (userCredential != null) {
 //         await afterExternalLogin(userCredential);
-//         return Authenticated(userCredential.user!, null);
-//----------------------
-// Use the OAuthCredential to sign in to Firebase.
+//         String email = isEmpty(userCredential.user?.email)
+//             ? "apple@email.com"
+//             : userCredential.user!.email!;
+//         String name = isEmpty(userCredential.user?.displayName)
+//             ? "appleName"
+//             : userCredential.user!.displayName!;
+//         String phone = isEmpty(userCredential.user?.phoneNumber)
+//             ? "098887665"
+//             : userCredential.user!.phoneNumber!;
+
+//         LoginInfo li = LoginInfo(
+//             user: AuthUser(
+//                 email: email, phone: phone, displayName: name, id: ''));
+//         _fromApple = true;
+
+//         return Authenticated(userCredential.user!, li);
+//       } else {
+//         return AuthenticationFailed("Apple Login failed");
+//       }
+//     } catch (e) {
+//       return AuthenticationFailed(e.toString());
+//     }
+//   }
+  String generateNonce([int length = 32]) {
+    final charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
+  }
+
+  /// Returns the sha256 hash of [input] in hex notation.
+  String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Future<AuthenticationState> appleLogin() async {
+    try {
+      OAuthCredential oAuthCredential = await signInWithApple();
+
       final userCredential =
           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
       if (userCredential != null) {
@@ -190,6 +232,32 @@ class AuthenticationController {
     } catch (e) {
       return AuthenticationFailed(e.toString());
     }
+  }
+
+  Future<OAuthCredential> signInWithApple() async {
+    // To prevent replay attacks with the credential returned from Apple, we
+    // include a nonce in the credential request. When signing in with
+    // Firebase, the nonce in the id token returned by Apple, is expected to
+    // match the sha256 hash of `rawNonce`.
+    final rawNonce = generateNonce();
+    final nonce = sha256ofString(rawNonce);
+
+    // Request credential for the currently signed in Apple account.
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: nonce,
+    );
+
+    // Create an `OAuthCredential` from the credential returned by Apple.
+    final oauthCredential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      rawNonce: rawNonce,
+    );
+
+    return oauthCredential;
   }
 
   LoginInfo convertUserCredentialsToLoginInfo(

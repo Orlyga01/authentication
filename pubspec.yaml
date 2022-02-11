@@ -16,6 +16,7 @@ dependencies:
   google_sign_in: ^5.0.2
   equatable: ^2.0.0
   meta: ^1.1.8
+  crypto: ^3.0.1
   shared_preferences: ^2.0.6
   flutter_riverpod: ^0.14.0+3
   sign_in_with_apple: ^3.3.0
