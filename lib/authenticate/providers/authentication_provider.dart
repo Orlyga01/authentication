@@ -106,7 +106,6 @@ class AuthenticationController {
         await UserLocalStorage()
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
       await UserLocalStorage().setKeyValue("loggedOut", "false");
-      log("after credentials success");
       return Authenticated(userc.user!, logininfo);
     } catch (e) {
       return AuthenticationFailed(e.toString(), logininfo);

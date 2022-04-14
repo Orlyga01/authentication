@@ -214,6 +214,7 @@ class LoginPage extends StatelessWidget {
                               ),
                             if (registerMode == true)
                               OutlinedButton(
+                                key:Key("haveAccount"),
                                 child: Text(("Already have an account?".ctr()),
                                     style: TextStyle(
                                         //   color: BeStyle.darkermain,
@@ -264,6 +265,7 @@ class _LoginButton extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width * 0.7,
         child: ElevatedButton(
+          key: Key("login_btn"),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

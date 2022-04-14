@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:authentication/authenticate/providers/import_auth.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:authentication/shared/import_shared.dart';
+import 'package:authentication/shared/locator.dart';
 import 'package:authentication/user/providers/import_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,7 +108,8 @@ class UserController {
   UserController._internal();
   AuthUser _user = AuthUser.empty;
   bool _isLoggedIn = false;
-  FirebaseUserRepository _userRepository = FirebaseUserRepository();
+  FirebaseUserRepository _userRepository =
+      authlocator.get<FirebaseUserRepository>();
   Map<String, dynamic>? _loginSettings;
   factory UserController() {
     return _userC;
