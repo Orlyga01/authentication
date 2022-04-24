@@ -21,7 +21,8 @@ class LoginInfo {
       this.name,
       this.externalLogin = false,
       this.user,
-      this.uid});
+      this.uid,
+      this.loggedOut});
 
   Map<String, dynamic> toJson() => {
         'email': email,

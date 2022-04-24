@@ -34,6 +34,7 @@ class LoginPage extends StatelessWidget {
     LoginInfo _logininfo = loginInfo != null
         ? loginInfo!
         : AuthenticationController().getLoginInfoFromLocal();
+    print(_logininfo.toJson().toString());
     AuthUser _loginUser = AuthUser(
         id: _logininfo.uid ?? "",
         displayName: _logininfo.name,
@@ -214,7 +215,7 @@ class LoginPage extends StatelessWidget {
                               ),
                             if (registerMode == true)
                               OutlinedButton(
-                                key:Key("haveAccount"),
+                                key: Key("haveAccount"),
                                 child: Text(("Already have an account?".ctr()),
                                     style: TextStyle(
                                         //   color: BeStyle.darkermain,

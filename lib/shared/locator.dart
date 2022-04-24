@@ -6,6 +6,7 @@ final authlocator = GetIt.instance;
 setupAuthServices() async {
   if (!_registered) {
     FirebaseUserRepository _userRepository = FirebaseUserRepository();
-    authlocator.registerSingleton<FirebaseUserRepository>(_userRepository);
+    authlocator
+        .registerSingleton<FirebaseUserRepository>(_userRepository);
   }
 }
