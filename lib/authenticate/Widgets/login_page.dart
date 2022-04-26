@@ -306,6 +306,7 @@ class _SignUpButton extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width * 0.7,
         child: ElevatedButton(
+          key: Key("registerButton"),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -322,11 +323,47 @@ class _SignUpButton extends StatelessWidget {
               }),
             ],
           ),
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate() && loginInfo != null) {
-              externalContext
-                  .read(authNotifierProviderForUser.notifier)
-                  .login(loginInfo!, fromRegister: true);
+              AuthUser? foundUser = await UserController()
+                  .isUserExists(loginInfo!.convertToAuthUser());
+              if (foundUser != null) {
+                Timer.run(() {
+                  showDialog(
+                      context: context,
+                      builder: (mcontext) => AlertDialog(
+                            title: Text("Registration Error".ctr()),
+                            content: Text(
+                                "Email or phone are already in use, would you like to login?"
+                                    .ctr()),
+                            actions: <Widget>[
+                              TextButton(
+                                key: Key("gotoLogin"),
+                                onPressed: () {
+                                  Navigator.pop(mcontext);
+                                  Navigator.pushNamed(context, "login",
+                                      arguments: {
+                                        "registerMode": false,
+                                        "logininfo": loginInfo!
+                                      });
+                                },
+                                child: const Text('Go to Login page'),
+                              ),
+                              TextButton(
+                                key: Key("stay"),
+                                onPressed: () => {
+                                  Navigator.pop(mcontext),
+                                },
+                                child: const Text('Stay here'),
+                              ),
+                            ],
+                          ));
+                });
+              } else {
+                externalContext
+                    .read(authNotifierProviderForUser.notifier)
+                    .login(loginInfo!, fromRegister: true);
+              }
             }
           },
         ));

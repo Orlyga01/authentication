@@ -42,7 +42,7 @@ class _UserFormState extends State<UserForm> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
-                key: Key("name"),
+                  key: Key("name"),
                   initialValue:
                       widget.loginInfo != null && widget.loginInfo!.name != null
                           ? widget.loginInfo!.name
@@ -89,7 +89,7 @@ class _UserFormState extends State<UserForm> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: TextFormField(
-                    key: Key("email"),
+                      key: Key("email"),
                       initialValue: (widget.loginInfo != null &&
                               widget.loginInfo!.isFromExternalLogin)
                           ? null
@@ -119,7 +119,7 @@ class _UserFormState extends State<UserForm> {
                 ),
                 if (widget.loginInfo != null)
                   TextFormField(
-                    key: Key("password"),
+                      key: Key("password"),
                       textDirection: TextDirection.ltr,
                       initialValue: widget.loginInfo!.isFromExternalLogin
                           ? null
@@ -143,6 +143,7 @@ class _UserFormState extends State<UserForm> {
                       }),
                 if (widget.loginInfo != null && widget.fromRegister)
                   TextFormField(
+                      key: Key("confirmPassword"),
                       initialValue: widget.loginInfo!.confirmedPassword,
                       obscureText: true,
                       textDirection: TextDirection.ltr,

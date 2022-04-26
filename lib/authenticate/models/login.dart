@@ -98,6 +98,10 @@ class LoginInfo {
   LoginInfo convertFromUser(AuthUser user) {
     return LoginInfo(email: user.email, phone: user.phone, uid: user.id);
   }
+
+  AuthUser convertToAuthUser() {
+    return AuthUser(email: email, phone: phone, id: uid ?? "");
+  }
 }
 
 class RegisterInfo {
