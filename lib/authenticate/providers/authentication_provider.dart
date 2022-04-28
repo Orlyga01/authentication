@@ -42,7 +42,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     state = AfterSuccessfulLogin();
   }
 
-  Future<void> login(LoginInfo logininfo,
+  Future<void>  login(LoginInfo logininfo,
       {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
@@ -118,74 +118,10 @@ class AuthenticationController {
     return oldLogin.uid != userc.user!.uid;
   }
 
-//   Future<AuthenticationState> appleLogin() async {
-//     if (!await SignInWithApple.isAvailable()) {
-//       return AuthenticationFailed(
-//         'This Device is not eligible for Apple Sign in',
-//       ); //Break from the program
-//     }
+  deleteCurrentUser() {
+    _authRepository.deleteCurrentUser();
+  }
 
-//     try {
-//       AuthorizationCredentialAppleID credential =
-//           await SignInWithApple.getAppleIDCredential(
-//         scopes: [
-//           AppleIDAuthorizationScopes.email,
-//           AppleIDAuthorizationScopes.fullName,
-//         ],
-//         webAuthenticationOptions: WebAuthenticationOptions(
-//           clientId: 'OrlyReznikAppleLogin',
-//           redirectUri: Uri.parse(
-//             'https://com.bemember.glitch.me/callbacks/sign_in_with_apple',
-//           ),
-//         ),
-//       );
-//       final signInWithAppleEndpoint = Uri(
-//         scheme: 'https',
-//         host: 'com.bemember.glitch.me',
-//         path: '/sign_in_with_apple',
-//         queryParameters: <String, String>{
-//           'code': credential.authorizationCode,
-//           if (credential.givenName != null) 'firstName': credential.givenName!,
-//           if (credential.familyName != null) 'lastName': credential.familyName!,
-//           'useBundleId': Platform.isIOS || Platform.isMacOS ? 'true' : 'false',
-//           if (credential.state != null) 'state': credential.state!,
-//         },
-//       );
-//       final session = await http.Client().post(
-//         signInWithAppleEndpoint,
-//       );
-//       final oAuthCredential = OAuthProvider('apple.com').credential(
-//         idToken: credential.identityToken,
-//         accessToken: credential.authorizationCode,
-//       );
-
-//       final userCredential =
-//           await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
-//       if (userCredential != null) {
-//         await afterExternalLogin(userCredential);
-//         String email = isEmpty(userCredential.user?.email)
-//             ? "apple@email.com"
-//             : userCredential.user!.email!;
-//         String name = isEmpty(userCredential.user?.displayName)
-//             ? "appleName"
-//             : userCredential.user!.displayName!;
-//         String phone = isEmpty(userCredential.user?.phoneNumber)
-//             ? "098887665"
-//             : userCredential.user!.phoneNumber!;
-
-//         LoginInfo li = LoginInfo(
-//             user: AuthUser(
-//                 email: email, phone: phone, displayName: name, id: ''));
-//         _fromApple = true;
-
-//         return Authenticated(userCredential.user!, li);
-//       } else {
-//         return AuthenticationFailed("Apple Login failed");
-//       }
-//     } catch (e) {
-//       return AuthenticationFailed(e.toString());
-//     }
-//   }
   String generateNonce([int length = 32]) {
     final charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';

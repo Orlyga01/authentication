@@ -154,19 +154,10 @@ class FirebaseAuthRepository {
     }
   }
 
-  // Future<String?> initMobileNumberState() async {
-  //   if (!await MobileNumber.hasPhonePermission) {
-  //     await MobileNumber.requestPhonePermission;
-  //   }
-  //   String? mobileNumber = '';
-  //   // Platform messages may fail, so we use a try/catch PlatformException.
-  //   try {
-  //     mobileNumber = await MobileNumber.mobileNumber;
-  //     return mobileNumber;
-  //   } on PlatformException catch (e) {
-  //     return "Failed to get mobile number because of '${e.message}'";
-  //   }
-  // }
+  Future<void> deleteCurrentUser() async {
+    if (_firebaseAuth.currentUser != null)
+      return _firebaseAuth.currentUser!.delete();
+  }
 
   String firebaseAuthExceptionConvertToReadableError(
       FirebaseAuthException error) {

@@ -306,7 +306,7 @@ class _SignUpButton extends StatelessWidget {
     return Container(
         width: MediaQuery.of(context).size.width * 0.7,
         child: ElevatedButton(
-          key: Key("registerButton"),
+          key: Key("register_btn"),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -19,8 +19,8 @@ class FirebaseUserRepository {
     return user;
   }
 
-  Future<void> delete(AuthUser user) {
-    return _userCollection.doc(user.id).delete();
+  Future<void> delete(String userid) {
+    return _userCollection.doc(userid).delete();
   }
 
   Future<AuthUser?> get(id) async {

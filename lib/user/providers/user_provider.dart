@@ -296,4 +296,8 @@ class UserController {
   dynamic getSettings(String setting) {
     return _loginSettings?[setting];
   }
+
+  Future<void> delete(id) async {
+    return _userRepository.delete(getUser.id);
+  }
 }
