@@ -42,7 +42,7 @@ class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
     state = AfterSuccessfulLogin();
   }
 
-  Future<void>  login(LoginInfo logininfo,
+  Future<void> login(LoginInfo logininfo,
       {bool fromRegister = false, bool keepExternal = false}) async {
     state = AuthenticationInProgress();
     if (!keepExternal) logininfo.externalLogin = false;
@@ -120,6 +120,10 @@ class AuthenticationController {
 
   deleteCurrentUser() {
     _authRepository.deleteCurrentUser();
+  }
+
+  Future<void> deleteAuthUser(String email, String password) async {
+    return _authRepository.deleteAuthUser(email, password);
   }
 
   String generateNonce([int length = 32]) {

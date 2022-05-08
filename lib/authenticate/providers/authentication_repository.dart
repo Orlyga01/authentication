@@ -154,6 +154,22 @@ class FirebaseAuthRepository {
     }
   }
 
+  Future deleteAuthUser(String email, String password) async {
+    try {
+      firebase_auth.User? user = await _firebaseAuth.currentUser;
+      AuthCredential credentials = firebase_auth.EmailAuthProvider.credential(
+          email: email, password: password);
+
+      firebase_auth.UserCredential? result =
+          await _firebaseAuth.signInWithCredential(credentials);
+      if (result.user != null) await result.user!.delete();
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<void> deleteCurrentUser() async {
     if (_firebaseAuth.currentUser != null)
       return _firebaseAuth.currentUser!.delete();

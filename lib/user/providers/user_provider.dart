@@ -113,7 +113,7 @@ class UserController {
   AuthUser _user = AuthUser.empty;
   bool _isLoggedIn = false;
   FirebaseUserRepository _userRepository =
-      authlocator.get<FirebaseUserRepository>();
+      authUserlocator.get<FirebaseUserRepository>();
   Map<String, dynamic>? _loginSettings;
   factory UserController() {
     return _userC;
