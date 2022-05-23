@@ -73,6 +73,15 @@ class UserLocalStorage {
     }
   }
 
+  Future<void> removeLoginData() async {
+    await setLogOut();
+    await remove("email");
+    await remove("name");
+    await remove("phone");
+    await remove("pswd");
+    await remove("externalLogin");
+  }
+
   LoginInfo getLoginData() {
     try {
       LoginInfo loginInfo = LoginInfo();

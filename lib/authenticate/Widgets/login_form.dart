@@ -12,6 +12,8 @@ class UserForm extends StatefulWidget {
   final bool fromRegister;
   final bool emailLogin;
   final bool phoneLogin;
+  final List<dynamic>? rolesList;
+ 
   // final GlobalKey<FormState> formKey;
 
   UserForm({
@@ -20,7 +22,7 @@ class UserForm extends StatefulWidget {
     this.fromRegister = false,
     this.loginInfo,
     this.emailLogin = true,
-    this.phoneLogin = true,
+    this.phoneLogin = true,  this.rolesList,
     // required this.formKey,
   }) : super(key: key);
   @override
@@ -29,7 +31,11 @@ class UserForm extends StatefulWidget {
 
 class _UserFormState extends State<UserForm> {
   late BuildContext _context;
-
+  late List<DropdownMenuItem<dynamic>> items;
+ void initState() {
+    items = createRolesForDropDown();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     _context = context;
@@ -38,6 +44,29 @@ class _UserFormState extends State<UserForm> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          
+          if (widget.loginInfo == null || widget.fromRegister || widget.roleList != null)
+ Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<dynamic>(
+              items: items,
+              value: widget.selectedItem,
+              style: TextStyle(
+                inherit: false,
+                fontSize: 16,
+              ),
+              icon: const Icon(Icons.expand_more_outlined),
+              onChanged: (value) => {
+                widget.onChange!(value) ?? () => {},
+                setState(() {
+                  value = getTextDisplay(value);
+                  widget.selectedItem = getTextDisplay(value);
+                })
+              },
+            ),
+          ),
+        )
           if (widget.loginInfo == null || widget.fromRegister)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
@@ -187,5 +216,15 @@ class _UserFormState extends State<UserForm> {
         ],
       ),
     );
+  }
+  List<DropdownMenuItem<dynamic>> createRolesForDropDown(
+      Function? selectedToString) {
+    List<DropdownMenuItem> ddMap = widget.rolesList!.map((value) {
+      return DropdownMenuItem(
+          value: value,
+          child: Container(
+              child: Text("Role".ctr(),)));
+    }).toList();
+    return ddMap;
   }
 }
