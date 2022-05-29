@@ -22,7 +22,12 @@ class MissingUserInfo extends StatelessWidget {
     return AlertDialog(
       title: Text("Please Complete:".ctr()),
       content: Container(
-        child: Form(key: formKey, child: UserForm(user: this.user)),
+        child: Form(
+            key: formKey,
+            child: UserForm(
+              user: this.user,
+              showPassword: false,
+            )),
       ),
       actions: [
         OutlinedButton(

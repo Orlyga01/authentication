@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:authentication/authenticate/Widgets/apple_widgets.dart';
 import 'package:authentication/authenticate/Widgets/google_widgets.dart';
+import 'package:authentication/authenticate/models/common_models.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/Widgets/missing_info.dart';
 import 'package:authentication/authentication.dart';
@@ -12,8 +13,10 @@ import 'login_form.dart';
 class LoginPage extends StatelessWidget {
   final Map<String, dynamic>? moreInfo;
   final LoginInfo? loginInfo;
+  final List<CustomInputFields>? customFields;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool? registerMode;
+  final Function(LoginInfo)? doBeforeRegister;
   final Widget? logoWidget;
   LoginPage({
     Key? key,
@@ -21,6 +24,8 @@ class LoginPage extends StatelessWidget {
     this.moreInfo,
     this.registerMode,
     this.loginInfo,
+    this.customFields,
+    this.doBeforeRegister,
   }) : super(key: key);
   late BuildContext _context;
 
@@ -34,7 +39,6 @@ class LoginPage extends StatelessWidget {
     LoginInfo _logininfo = loginInfo != null
         ? loginInfo!
         : AuthenticationController().getLoginInfoFromLocal();
-    print(_logininfo.toJson().toString());
     AuthUser _loginUser = AuthUser(
         id: _logininfo.uid ?? "",
         displayName: _logininfo.name,
@@ -227,12 +231,15 @@ class LoginPage extends StatelessWidget {
                               ),
                             SizedBox(height: 10.0),
                             UserForm(
-                                fromRegister: registerMode ?? false,
-                                loginInfo: _logininfo,
-                                user: _logininfo.user!),
+                              fromRegister: registerMode ?? false,
+                              loginInfo: _logininfo,
+                              user: _logininfo.user!,
+                              customFields: customFields,
+                            ),
                             const SizedBox(height: 20.0),
                             registerMode == true
-                                ? _SignUpButton(_logininfo, _formKey, _context)
+                                ? _SignUpButton(_logininfo, _formKey, _context,
+                                    doBeforeRegister)
                                 : _LoginButton(_logininfo, _formKey, _context),
                             SizedBox(height: 20.0),
                             Divider(),
@@ -298,8 +305,10 @@ class _SignUpButton extends StatelessWidget {
   final LoginInfo? loginInfo;
   final GlobalKey<FormState> _formKey;
   final BuildContext externalContext;
+  final Function(LoginInfo)? doBeforeRegister;
 
-  const _SignUpButton(this.loginInfo, this._formKey, this.externalContext);
+  const _SignUpButton(this.loginInfo, this._formKey, this.externalContext,
+      this.doBeforeRegister);
 
   @override
   Widget build(BuildContext context) {
@@ -347,19 +356,22 @@ class _SignUpButton extends StatelessWidget {
                                         "logininfo": loginInfo!
                                       });
                                 },
-                                child: const Text('Go to Login page'),
+                                child: Text('Go to Login page'.ctr()),
                               ),
                               TextButton(
                                 key: Key("stay"),
                                 onPressed: () => {
                                   Navigator.pop(mcontext),
                                 },
-                                child: const Text('Stay here'),
+                                child: Text('Stay here'.ctr()),
                               ),
                             ],
                           ));
                 });
               } else {
+                if (doBeforeRegister != null && loginInfo != null) {
+                  doBeforeRegister!(loginInfo!);
+                }
                 externalContext
                     .read(authNotifierProviderForUser.notifier)
                     .login(loginInfo!, fromRegister: true);

@@ -1,6 +1,5 @@
 import 'package:authentication/shared/import_shared.dart';
 import 'package:authentication/user/models/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginInfo {
   String? email;
@@ -12,8 +11,8 @@ class LoginInfo {
   bool? loggedOut;
   String? confirmedPassword;
   AuthUser? user = AuthUser.empty;
-
   String? role; //superAdmin, admin
+  Map<String, dynamic>? customFields = {};
   LoginInfo(
       {this.email,
       this.password,
@@ -49,6 +48,8 @@ class LoginInfo {
   static final emailErrString = " Email is incorrect";
   static final _passwordRegExp =
       RegExp(r'^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z!.@#$%^&*?]{8,}$');
+  void setCustomFields(String fieldName, dynamic value) =>
+      this.customFields?[fieldName] = value;
 
   String validate() {
     String validate;
@@ -101,51 +102,5 @@ class LoginInfo {
 
   AuthUser convertToAuthUser() {
     return AuthUser(email: email, phone: phone, id: uid ?? "");
-  }
-}
-
-class RegisterInfo {
-  LoginInfo? loginInfo;
-  String? confirmedPassword;
-  AuthUser? user;
-
-  //TODO
-  String? role; //superAdmin, admin
-  RegisterInfo({this.user, this.loginInfo, this.confirmedPassword});
-
-  String validate() {
-    String validate = '';
-    validate = userValidator(user!);
-    if (validate != '') return validate;
-    validate = loginInfo!.validate();
-    if (validate != '') return validate;
-    validate = confirmPasswordpasswordValidator(confirmedPassword);
-    if (validate != '') return validate;
-
-    return "";
-  }
-
-  String phoneValidator(String value) {
-    return isEmpty(value) ? 'Phone is Empty' : "";
-  }
-
-  String emailValidator(String value) {
-    return loginInfo!.emailValidator(value);
-  }
-
-  String passwordValidator(String? value) {
-    return loginInfo!.passwordValidator(value);
-  }
-
-  String confirmPasswordpasswordValidator(String? value) {
-    return (value == loginInfo!.password) ? '' : ("Passwords don't match"); //
-  }
-
-  String userValidator(AuthUser value) {
-    return value.validate();
-  }
-
-  static get empty {
-    return RegisterInfo(loginInfo: LoginInfo.empty, user: AuthUser.empty);
   }
 }

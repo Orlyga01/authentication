@@ -1,5 +1,5 @@
+import 'package:authentication/authenticate/models/common_models.dart';
 import 'package:authentication/authenticate/models/login.dart';
-import 'package:authentication/shared/auth_constants.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/import_user.dart';
 
@@ -12,17 +12,23 @@ class UserForm extends StatefulWidget {
   final bool fromRegister;
   final bool emailLogin;
   final bool phoneLogin;
+  bool? showPassword = true;
+  List<CustomInputFields>? customFields;
+
   // final GlobalKey<FormState> formKey;
 
-  UserForm({
-    Key? key,
-    required this.user,
-    this.fromRegister = false,
-    this.loginInfo,
-    this.emailLogin = true,
-    this.phoneLogin = true,
-    // required this.formKey,
-  }) : super(key: key);
+  UserForm(
+      {Key? key,
+      required this.user,
+      this.fromRegister = false,
+      this.loginInfo,
+      this.emailLogin = true,
+      this.phoneLogin = true,
+      this.customFields,
+      this.showPassword
+      // required this.formKey,
+      })
+      : super(key: key);
   @override
   _UserFormState createState() => _UserFormState();
 }
@@ -38,13 +44,25 @@ class _UserFormState extends State<UserForm> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.loginInfo == null || widget.fromRegister)
+          if (isRegisterMode && widget.customFields != null)
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.customFields!.length,
+                itemBuilder: (context, index) {
+                  widget.customFields![index].index = index;
+                  return CustomInputWidget(
+                    customField: widget.customFields![index],
+                    onChanged: (value) =>
+                        widget.customFields![index].value = value,
+                  );
+                }),
+          if (isRegisterMode)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
                   key: Key("name"),
                   initialValue:
-                      widget.loginInfo != null && widget.loginInfo!.name != null
+                      !isLoginInfoForRegister && widget.loginInfo!.name != null
                           ? widget.loginInfo!.name
                           : widget.user.displayName ?? '',
                   keyboardType: TextInputType.name,
@@ -63,7 +81,7 @@ class _UserFormState extends State<UserForm> {
                     return null;
                   }),
             ),
-          if (widget.loginInfo == null || widget.fromRegister)
+          if (isRegisterMode)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
@@ -90,7 +108,7 @@ class _UserFormState extends State<UserForm> {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: TextFormField(
                       key: Key("email"),
-                      initialValue: (widget.loginInfo != null &&
+                      initialValue: (!isLoginInfoForRegister &&
                               widget.loginInfo!.isFromExternalLogin)
                           ? null
                           : widget.user.email,
@@ -101,7 +119,7 @@ class _UserFormState extends State<UserForm> {
                       ),
                       onChanged: (String inputString) {
                         setState(() {
-                          if (widget.loginInfo != null)
+                          if (!isLoginInfoForRegister)
                             widget.loginInfo!.password = null;
                           widget.user.email = inputString;
                           widget.loginInfo?.email = inputString;
@@ -117,7 +135,7 @@ class _UserFormState extends State<UserForm> {
                         return null;
                       }),
                 ),
-                if (widget.loginInfo != null)
+                if (widget.showPassword != false)
                   TextFormField(
                       key: Key("password"),
                       textDirection: TextDirection.ltr,
@@ -141,7 +159,7 @@ class _UserFormState extends State<UserForm> {
 
                         return null;
                       }),
-                if (widget.loginInfo != null && widget.fromRegister)
+                if (isRegisterMode)
                   TextFormField(
                       key: Key("confirmPassword"),
                       initialValue: widget.loginInfo!.confirmedPassword,
@@ -173,7 +191,7 @@ class _UserFormState extends State<UserForm> {
               ],
             ),
           ),
-          if (!widget.fromRegister && widget.loginInfo != null)
+          if (!isRegisterMode)
             Container(
               padding: EdgeInsets.only(top: 20),
               child: GestureDetector(
@@ -188,4 +206,9 @@ class _UserFormState extends State<UserForm> {
       ),
     );
   }
+
+  bool get isRegisterMode => isLoginInfoForRegister || widget.fromRegister;
+  bool get isLoginInfoForRegister =>
+      widget.loginInfo == null ||
+      (widget.loginInfo != null && widget.loginInfo!.email == null);
 }

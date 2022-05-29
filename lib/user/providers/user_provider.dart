@@ -164,19 +164,20 @@ class UserController {
           throw "User from External Authentication system is empty";
         //TOBE REMOVE
         AuthUser newUser = AuthUser(
-          id: authUser.uid,
-          email:
-              isEmpty(authUser.email) ? loginInfo?.user?.email : authUser.email,
-          phone: isEmpty(authUser.phoneNumber)
-              ? loginInfo?.user?.phone
-              : authUser.phoneNumber,
-          image: isEmpty(loginInfo?.user?.image)
-              ? authUser.photoURL
-              : loginInfo?.user?.image,
-          displayName: isEmpty(loginInfo?.user?.displayName)
-              ? authUser.displayName
-              : loginInfo?.user?.displayName,
-        );
+            id: authUser.uid,
+            email: isEmpty(authUser.email)
+                ? loginInfo?.user?.email
+                : authUser.email,
+            phone: isEmpty(authUser.phoneNumber)
+                ? loginInfo?.user?.phone
+                : authUser.phoneNumber,
+            image: isEmpty(loginInfo?.user?.image)
+                ? authUser.photoURL
+                : loginInfo?.user?.image,
+            displayName: isEmpty(loginInfo?.user?.displayName)
+                ? authUser.displayName
+                : loginInfo?.user?.displayName,
+            role: loginInfo?.user?.role);
         try {
           AuthUser? addedUser = await addUser(newUser);
           if (addedUser == null) throw "Couldnt create a user";
@@ -255,9 +256,7 @@ class UserController {
     //The current user was changed, then we need to update the global _user
     if (id == userid) {
       if (fieldName != null) {
-        Map<String, dynamic> map = _user.toJson();
-        map[fieldName] = fieldValue;
-        _user = AuthUser.fromJson(map);
+        _user.toJson()[fieldName] = fieldValue;
         UserLocalStorage().setAuthUser(_user);
       } else if (user != null) {
         _user = user;
