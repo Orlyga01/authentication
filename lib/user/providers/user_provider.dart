@@ -118,6 +118,7 @@ class UserController {
   factory UserController() {
     return _userC;
   }
+
   void init() {
     return;
   }

@@ -207,7 +207,7 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
-  bool get isRegisterMode => isLoginInfoForRegister || widget.fromRegister;
+  bool get isRegisterMode => widget.fromRegister;
   bool get isLoginInfoForRegister =>
       widget.loginInfo == null ||
       (widget.loginInfo != null && widget.loginInfo!.email == null);

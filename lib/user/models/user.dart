@@ -17,6 +17,8 @@ class AuthUser {
   String? oneSignalPlayers;
   String? role;
   bool? isSuperAdmin;
+  String? additionalInfoJson;
+  String? personId;
 
   String validate() {
     if (email == null && phone == null)
@@ -35,7 +37,9 @@ class AuthUser {
       this.settings,
       this.oneSignalPlayers,
       this.isSuperAdmin,
-      this.role});
+      this.role,
+      this.personId,
+      this.additionalInfoJson});
 
   AuthUser.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -43,6 +47,7 @@ class AuthUser {
         email = json['email'],
         phone = json['phone'],
         image = json['image'],
+        personId = json['personId'],
         isSuperAdmin =
             json['isSuperAdmin'] == true || json['isSuperAdmin'] == "true",
         // isSuperAdmin = true,
@@ -52,8 +57,8 @@ class AuthUser {
             ? UserSettings.fromJson(json["settings"])
             : null,
         createdAt = DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
-        modifiedAt = DateTime.fromMillisecondsSinceEpoch(json['modifiedAt']);
-
+        modifiedAt = DateTime.fromMillisecondsSinceEpoch(json['modifiedAt']),
+        additionalInfoJson = json['additionalInfoJson'];
   //collectionFromJson(
   //   json['groups'], (value) => UserGroup.fromJson(value));
   @override
@@ -77,7 +82,9 @@ class AuthUser {
         'modifiedAt': modifiedAt?.millisecondsSinceEpoch,
         'role': role,
         'isSuperAdmin': isSuperAdmin,
-        'settings': settings?.toJson()
+        'settings': settings?.toJson(),
+        'additionalInfoJson': additionalInfoJson,
+        'personId': personId
       };
   static get empty {
     return AuthUser(email: '', id: '', phone: '');
