@@ -14,6 +14,10 @@ dynamic myDateSerializer(dynamic object) {
   return object;
 }
 
+extension StringIsEmpty on String? {
+  bool get isEmptyBe => this == null || this!.isEmpty;
+}
+
 extension StringTranslateExtensionCustom on String {
   String ctr({
     List<String>? args,

@@ -12,6 +12,7 @@ class UserForm extends StatefulWidget {
   final bool fromRegister;
   final bool emailLogin;
   final bool phoneLogin;
+  final bool fromMissingInfo;
   bool? showPassword = true;
   List<CustomInputFields>? customFields;
 
@@ -24,6 +25,7 @@ class UserForm extends StatefulWidget {
       this.loginInfo,
       this.emailLogin = true,
       this.phoneLogin = true,
+      this.fromMissingInfo = false,
       this.customFields,
       this.showPassword
       // required this.formKey,
@@ -56,7 +58,8 @@ class _UserFormState extends State<UserForm> {
                         widget.customFields![index].value = value,
                   );
                 }),
-          if (isRegisterMode)
+          if (isRegisterMode ||
+              (widget.fromMissingInfo && widget.user.displayName.isEmptyBe))
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
@@ -81,7 +84,8 @@ class _UserFormState extends State<UserForm> {
                     return null;
                   }),
             ),
-          if (isRegisterMode)
+          if (isRegisterMode ||
+              (widget.fromMissingInfo && widget.user.phone.isEmptyBe))
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextFormField(
@@ -104,37 +108,38 @@ class _UserFormState extends State<UserForm> {
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: TextFormField(
-                      key: Key("email"),
-                      initialValue: (!isLoginInfoForRegister &&
-                              widget.loginInfo!.isFromExternalLogin)
-                          ? null
-                          : widget.user.email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: ("Email".ctr()),
-                        //   prefixIcon: Icon(Icons.star_rate, size: 10, color: Colors.red),
-                      ),
-                      onChanged: (String inputString) {
-                        setState(() {
-                          if (!isLoginInfoForRegister)
-                            widget.loginInfo!.password = null;
-                          widget.user.email = inputString;
-                          widget.loginInfo?.email = inputString;
-                        });
-                      },
-                      validator: (value) {
-                        String validate = LoginInfo().emailValidator(value!);
-                        if (validate == '') {
-                          widget.user.email = value;
-                          widget.loginInfo?.email = value;
-                        } else
-                          return validate;
-                        return null;
-                      }),
-                ),
+                if (!(widget.fromMissingInfo && widget.user.email != null))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: TextFormField(
+                        key: Key("email"),
+                        initialValue: (!isLoginInfoForRegister &&
+                                widget.loginInfo!.isFromExternalLogin)
+                            ? null
+                            : widget.user.email,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: ("Email".ctr()),
+                          //   prefixIcon: Icon(Icons.star_rate, size: 10, color: Colors.red),
+                        ),
+                        onChanged: (String inputString) {
+                          setState(() {
+                            if (!isLoginInfoForRegister)
+                              widget.loginInfo!.password = null;
+                            widget.user.email = inputString;
+                            widget.loginInfo?.email = inputString;
+                          });
+                        },
+                        validator: (value) {
+                          String validate = LoginInfo().emailValidator(value!);
+                          if (validate == '') {
+                            widget.user.email = value;
+                            widget.loginInfo?.email = value;
+                          } else
+                            return validate;
+                          return null;
+                        }),
+                  ),
                 if (widget.showPassword != false)
                   TextFormField(
                       key: Key("password"),
@@ -191,7 +196,7 @@ class _UserFormState extends State<UserForm> {
               ],
             ),
           ),
-          if (!isRegisterMode)
+          if (!isRegisterMode && !widget.fromMissingInfo)
             Container(
               padding: EdgeInsets.only(top: 20),
               child: GestureDetector(
