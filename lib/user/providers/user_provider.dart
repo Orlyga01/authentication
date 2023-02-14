@@ -118,6 +118,7 @@ class UserController {
   factory UserController() {
     return _userC;
   }
+
   void init() {
     return;
   }
@@ -190,6 +191,7 @@ class UserController {
           UserError(e.toString());
         }
       } else {
+        user = completeMissingInfoFromLoginInfo(user, loginInfo);
         UserController().setUserInController(user);
         UserLocalStorage().setAuthUser(user);
         if (user.isInfoMissing) return UserMissingInfo(user);
@@ -203,6 +205,28 @@ class UserController {
       return UserError(e.toString());
     }
     return UserError("error");
+  }
+
+  AuthUser completeMissingInfoFromLoginInfo(
+      AuthUser user, LoginInfo? loginInfouser) {
+    if (loginInfouser == null) return user;
+    bool needtoupdateuser = false;
+    if (user.displayName.isEmptyBe && !loginInfouser.name.isEmptyBe) {
+      user.displayName = loginInfouser.name;
+      needtoupdateuser = true;
+    }
+    if (user.phone.isEmptyBe && !loginInfouser.phone.isEmptyBe) {
+      user.phone = loginInfouser.phone;
+      needtoupdateuser = true;
+    }
+    if (user.email.isEmptyBe && !loginInfouser.email.isEmptyBe) {
+      user.email = loginInfouser.email;
+      needtoupdateuser = true;
+    }
+    if (needtoupdateuser) {
+      updateUser(user.id, user);
+    }
+    return user;
   }
 
   setUserInController(AuthUser user) {

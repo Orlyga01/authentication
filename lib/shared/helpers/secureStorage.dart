@@ -32,7 +32,10 @@ class UserLocalStorage {
   }
 
   Future<void> setAuthUser(AuthUser user) {
+    return _storage.setString("role", user.role?? "");
+
     return _storage.setString("AuthUser", user.toString());
+    
   }
 
   AuthUser? getAuthUser() {

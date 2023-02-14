@@ -27,6 +27,7 @@ class MissingUserInfo extends StatelessWidget {
             child: UserForm(
               user: this.user,
               showPassword: false,
+              fromMissingInfo: true,
             )),
       ),
       actions: [
