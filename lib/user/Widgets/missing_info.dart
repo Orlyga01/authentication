@@ -4,14 +4,14 @@ import 'package:authentication/user/providers/import_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MissingUserInfo extends StatelessWidget {
+class MissingUserInfo extends ConsumerWidget {
   final AuthUser user;
   final formKey = new GlobalKey<FormState>();
 
   MissingUserInfo({Key? key, required this.user}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     if (user.phone != null && user.phone!.indexOf("missing") > -1)
       user.phone = "";
     if (user.email != null && user.email!.indexOf("missing") > -1)
@@ -36,7 +36,7 @@ class MissingUserInfo extends StatelessWidget {
               if (formKey.currentState!.validate()) {
                 bool valid = await checkUserValidity(user, context);
                 if (valid) {
-                  context
+                  ref
                       .read(userNotifier.notifier)
                       .completeUserMissingInfoAfterAuthenticate(user);
                 }

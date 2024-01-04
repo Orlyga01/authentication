@@ -22,8 +22,9 @@ final userNotifier = StateNotifierProvider<UserNotifier, UserState>((ref) {
 });
 
 class UserNotifier extends StateNotifier<UserState> {
-  ProviderReference os;
+  Ref os;
   late var authState;
+  //!!!! changes done here
   UserNotifier(this.os) : super(UserLoading()) {
     authChanged();
   }

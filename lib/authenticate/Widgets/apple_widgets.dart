@@ -21,7 +21,7 @@ class AppleLoginButton extends StatelessWidget {
       return Consumer(
         builder: (
           context,
-          ScopedReader watch,
+          ref,
           child,
         ) {
           return Container(
@@ -33,13 +33,13 @@ class AppleLoginButton extends StatelessWidget {
                     style: SignInWithAppleButtonStyle.whiteOutlined,
                     height: 40,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
-                    onPressed: () => context
+                    onPressed: () => ref
                         .read(authNotifierProviderForUser.notifier)
                         .AppleLogin(),
                   ),
                 ),
-                Consumer(builder: (context, ScopedReader watch, child) {
-                  final state = watch(authNotifierProviderForUser);
+                Consumer(builder: (context,  ref, child) {
+                  final state = ref.watch(authNotifierProviderForUser);
                   if (state is AppleAuthenticationInProgress)
                     return SizedBox(
                         width: 30, child: CircularProgressIndicator());

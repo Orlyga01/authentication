@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'login_form.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends ConsumerWidget {
   final Map<String, dynamic>? moreInfo;
   final LoginInfo? loginInfo;
   final List<CustomInputFields>? customFields;
@@ -28,13 +28,15 @@ class LoginPage extends StatelessWidget {
     this.doBeforeRegister,
   }) : super(key: key);
   late BuildContext _context;
+  late WidgetRef _ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (moreInfo != null && moreInfo?["registerMode"] == false) {
       registerMode = false;
     }
     _context = context;
+    _ref = ref;
 // this is sent from the joinmom flow
     LoginInfo _logininfo = loginInfo != null
         ? loginInfo!
@@ -78,8 +80,8 @@ class LoginPage extends StatelessWidget {
           body: Container(
             child: SingleChildScrollView(
               child: Column(children: [
-                Consumer(builder: (context, listen, child) {
-                  var state = listen(userNotifier);
+                Consumer(builder: (context, ref, child) {
+                  var state = ref.watch(userNotifier);
 
                   if (state is UserNeedsToRegister) {
                     //if regsiterMode = true, then we are already in the register page, and if the registerMode is false, that means that we force to continue even though the local storage is empty
@@ -145,7 +147,7 @@ class LoginPage extends StatelessWidget {
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () => {
-                                      context
+                                      ref
                                           .read(authNotifierProviderForUser
                                               .notifier)
                                           .resetState(),
@@ -238,9 +240,9 @@ class LoginPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 20.0),
                             registerMode == true
-                                ? _SignUpButton(_logininfo, _formKey, _context,
+                                ? _SignUpButton(_logininfo, _formKey, _ref,
                                     doBeforeRegister)
-                                : _LoginButton(_logininfo, _formKey, _context),
+                                : _LoginButton(_logininfo, _formKey, _ref),
                             SizedBox(height: 20.0),
                             Divider(),
                             SizedBox(height: 20.0),
@@ -260,12 +262,12 @@ class LoginPage extends StatelessWidget {
 class _LoginButton extends StatelessWidget {
   final LoginInfo? loginInfo;
   final GlobalKey<FormState> _formKey;
-  final BuildContext externalContext;
+  final WidgetRef externalref;
 
   const _LoginButton(
     this.loginInfo,
     this._formKey,
-    this.externalContext,
+    this.externalref,
   );
 
   @override
@@ -281,8 +283,8 @@ class _LoginButton extends StatelessWidget {
                 "Login".ctr(),
               ),
               SizedBox(width: 10),
-              Consumer(builder: (context, ScopedReader watch, child) {
-                final state = watch(authNotifierProviderForUser);
+              Consumer(builder: (context, ref, child) {
+                final state = ref.watch(authNotifierProviderForUser);
                 if (state is AuthenticationInProgress)
                   return CircularProgressIndicator();
                 else
@@ -292,7 +294,7 @@ class _LoginButton extends StatelessWidget {
           ),
           onPressed: () {
             if (_formKey.currentState!.validate() && loginInfo != null) {
-              externalContext
+              externalref
                   .read(authNotifierProviderForUser.notifier)
                   .login(loginInfo!);
             }
@@ -304,11 +306,11 @@ class _LoginButton extends StatelessWidget {
 class _SignUpButton extends StatelessWidget {
   final LoginInfo? loginInfo;
   final GlobalKey<FormState> _formKey;
-  final BuildContext externalContext;
+  final WidgetRef externalref;
   final Function(LoginInfo)? doBeforeRegister;
 
-  const _SignUpButton(this.loginInfo, this._formKey, this.externalContext,
-      this.doBeforeRegister);
+  const _SignUpButton(
+      this.loginInfo, this._formKey, this.externalref, this.doBeforeRegister);
 
   @override
   Widget build(BuildContext context) {
@@ -323,8 +325,8 @@ class _SignUpButton extends StatelessWidget {
                 "Register".ctr(),
               ),
               SizedBox(width: 10),
-              Consumer(builder: (context, ScopedReader watch, child) {
-                final state = watch(authNotifierProviderForUser);
+              Consumer(builder: (context, ref, child) {
+                final state = ref.watch(authNotifierProviderForUser);
                 if (state is AuthenticationInProgress)
                   return CircularProgressIndicator();
                 else
@@ -372,7 +374,7 @@ class _SignUpButton extends StatelessWidget {
                 if (doBeforeRegister != null && loginInfo != null) {
                   doBeforeRegister!(loginInfo!);
                 }
-                externalContext
+                externalref
                     .read(authNotifierProviderForUser.notifier)
                     .login(loginInfo!, fromRegister: true);
               }

@@ -24,8 +24,8 @@ class GoogleLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // String? screen = currentPage(GlobalKey<NavigatorState>()),
 
-    return Consumer(builder: (context, ScopedReader watch, child) {
-      final state = watch(authNotifierProviderForUser);
+    return Consumer(builder: (context,  ref, child) {
+      final state = ref.watch(authNotifierProviderForUser);
 
       return OutlinedButton(
           style: OutlinedButton.styleFrom(
@@ -41,8 +41,8 @@ class GoogleLoginButton extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10),
-              Consumer(builder: (context, ScopedReader watch, child) {
-                final state = watch(authNotifierProviderForUser);
+              Consumer(builder: (context,  ref, child) {
+                final state = ref.watch(authNotifierProviderForUser);
                 if (state is GoogleAuthenticationInProgress)
                   return CircularProgressIndicator();
                 else
@@ -54,7 +54,7 @@ class GoogleLoginButton extends StatelessWidget {
             ],
           ),
           onPressed: () =>
-              context.read(authNotifierProviderForUser.notifier).GoogleLogin());
+              ref.read(authNotifierProviderForUser.notifier).GoogleLogin());
     });
   }
 }
