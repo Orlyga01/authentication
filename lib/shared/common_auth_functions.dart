@@ -1,4 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
+// import 'package:easy_localization/easy_localization.dart';
 
 bool isEmpty(dynamic field) {
   return ((field == null) ||
@@ -26,7 +26,8 @@ extension StringTranslateExtensionCustom on String {
   }) {
     String? newgender;
     if (gender != null) newgender = gender ? "boy" : "girl";
-    String tmp = this.tr(args: args, namedArgs: namedArgs, gender: newgender);
-    return isEmpty(tmp) ? this : tmp;
+    // String tmp;
+    //  String tmp = this.(args: args, namedArgs: namedArgs, gender: newgender);
+    return "need to fix this";
   }
 }
