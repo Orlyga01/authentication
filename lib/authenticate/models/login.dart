@@ -10,6 +10,7 @@ class LoginInfo {
   bool? externalLogin;
   bool? loggedOut;
   String? confirmedPassword;
+  String? loginType;
   AuthUser? user = AuthUser.empty;
   String? role; //superAdmin, admin
   Map<String, dynamic>? customFields = {};
@@ -18,6 +19,7 @@ class LoginInfo {
       this.password,
       this.phone,
       this.name,
+      this.loginType,
       this.externalLogin = false,
       this.user,
       this.uid,
