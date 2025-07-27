@@ -49,12 +49,19 @@ class GoogleLoginButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Google logo
-              Image.asset(
-                'assets/images/google_logo.png',
-                height: 25,
-                package: 'authentication',
-              ),
+              // Show spinner during authentication, otherwise show Google logo
+              if (state is GoogleAuthenticationInProgress)
+                SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: pendingSpinner ?? CircularProgressIndicator(),
+                )
+              else
+                Image.asset(
+                  'assets/images/google_logo.png',
+                  height: 25,
+                  package: 'authentication',
+                ),
               SizedBox(width: 10),
               Text(
                 buttonText ?? 'Sign in with Google'.ctr(),
@@ -62,10 +69,6 @@ class GoogleLoginButton extends StatelessWidget {
                   color: outlined ? (textColor ?? Colors.white) : Colors.white,
                 ),
               ),
-              // Progress indicator if needed
-              if (state is GoogleAuthenticationInProgress) SizedBox(width: 10),
-              if (state is GoogleAuthenticationInProgress)
-                pendingSpinner ?? CircularProgressIndicator(),
             ],
           ),
           onPressed: disabled == true
