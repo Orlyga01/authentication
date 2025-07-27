@@ -19,11 +19,10 @@ class FirebaseAuthRepository {
   /// {@macro authentication_repository}
   FirebaseAuthRepository({
     firebase_auth.FirebaseAuth? firebaseAuth,
-    GoogleSignIn? googleSignIn,
-  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.standard();
+  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+  
   final firebase_auth.FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
+  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   /// Stream of [User] which will emit the current user when
   /// the authentication state changes.
@@ -68,11 +67,10 @@ class FirebaseAuthRepository {
         GoogleAuthProvider authProvider = GoogleAuthProvider();
         return await FirebaseAuth.instance.signInWithPopup(authProvider);
       } else {
-        final googleUser = await _googleSignIn.signIn();
-        final googleAuth = await googleUser?.authentication;
+        final googleUser = await _googleSignIn.authenticate();
+        final googleAuth = googleUser.authentication;
         final credential = firebase_auth.GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken,
-          idToken: googleAuth?.idToken,
+          idToken: googleAuth.idToken,
         );
         return await _firebaseAuth.signInWithCredential(credential);
       }
