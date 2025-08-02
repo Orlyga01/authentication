@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:authentication/authenticate/providers/authentication_state.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/user_provider.dart';
@@ -16,19 +15,20 @@ class GoogleLoginButton extends StatelessWidget {
   final bool? saveToLocalStorage;
   final Widget? pendingSpinner;
   final BuildContext externalContext;
-  const GoogleLoginButton(
-      {Key? key,
-      this.outlined = false,
-      this.buttonText,
-      required this.externalContext,
-      this.mainColor = Colors.grey,
-      this.textColor = Colors.grey,
-      this.outerContext,
-      this.saveToLocalStorage = true,
-      this.disabled = false,
-      this.pendingSpinner,
-      this.disableFunction})
-      : super(key: key);
+
+  const GoogleLoginButton({
+    Key? key,
+    this.outlined = false,
+    this.buttonText,
+    required this.externalContext,
+    this.mainColor = Colors.grey,
+    this.textColor = Colors.grey,
+    this.outerContext,
+    this.saveToLocalStorage = true,
+    this.disabled = false,
+    this.pendingSpinner,
+    this.disableFunction,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     // String? screen = currentPage(GlobalKey<NavigatorState>()),

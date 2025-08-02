@@ -1,202 +1,157 @@
 import 'dart:async';
 
-import 'package:authentication/shared/import_shared.dart';
-
-import 'import_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:authentication/authenticate/models/oauth_models.dart';
+import 'package:authentication/authenticate/auth_config.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-//import 'package:mobile_number/mobile_number.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-class SignUpFailure implements Exception {}
+class GoogleSignInFailure implements Exception {
+  final String message;
+  GoogleSignInFailure(this.message);
+}
 
-class LogInWithEmailAndPasswordFailure implements Exception {}
+class AppleSignInFailure implements Exception {
+  final String message;
+  AppleSignInFailure(this.message);
+}
 
-class LogOutFailure implements Exception {}
+class OAuthAuthRepository {
+  /// OAuth-based authentication repository without Firebase
+  /// Configuration is now automatically loaded from AuthConfig.
+  /// Make sure to call AuthConfig.initialize() before using this repository.
+  OAuthAuthRepository();
 
-class FirebaseAuthRepository {
-  /// {@macro authentication_repository}
-  FirebaseAuthRepository({
-    firebase_auth.FirebaseAuth? firebaseAuth,
-  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
-  
-  final firebase_auth.FirebaseAuth _firebaseAuth;
-  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  GoogleSignIn get _googleSignIn => GoogleSignIn.instance;
 
-  /// Stream of [User] which will emit the current user when
-  /// the authentication state changes.
-  ///
-  /// Emits [User.empty] if the user is not authenticated.
-  Stream<User?> get authUser {
-    return _firebaseAuth.authStateChanges().map((firebaseUser) {
-      return firebaseUser;
-    });
+  /// Get Google configuration from global AuthConfig
+  GoogleAuthConfig get _googleConfig {
+    if (!AuthConfig.isInitialized) {
+      throw Exception(
+          'AuthConfig not initialized. Call AuthConfig.initialize() first.');
+    }
+    return AuthConfig.instance.googleConfig;
   }
 
-  /// Creates a new user with the provided [email] and [password].
-  ///
-  /// Throws a [SignUpFailure] if an exception occurs.
+  /// Get Apple configuration from global AuthConfig
+  AppleAuthConfig get _appleConfig {
+    if (!AuthConfig.isInitialized) {
+      throw Exception(
+          'AuthConfig not initialized. Call AuthConfig.initialize() first.');
+    }
+    return AuthConfig.instance.appleConfig;
+  }
 
-  Future<UserCredential> signUp(LoginInfo info) async {
+  /// Signs in with Google and returns Google OAuth data
+  ///
+  /// Throws a [GoogleSignInFailure] if an exception occurs.
+  Future<GoogleOAuthResult> signInWithGoogle() async {
     try {
-      return _firebaseAuth.createUserWithEmailAndPassword(
-        email: info.email!,
-        password: info.password!,
+      final config = _googleConfig;
+      if (!config.isConfigured) {
+        throw GoogleSignInFailure(
+            'Google Sign-In not configured. Provide serverClientId in AuthConfig.initialize()');
+      }
+
+      final GoogleSignInAccount? googleUser =
+          await _googleSignIn.authenticate();
+
+      if (googleUser == null) {
+        throw GoogleSignInFailure('Google Sign-In was cancelled by user');
+      }
+
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      // For access tokens, you would need to use the authorization client
+      // For now, we'll set accessToken to null since it requires additional scopes
+      return GoogleOAuthResult(
+        accessToken:
+            null, // Access token requires authorization client with specific scopes
+        idToken: googleAuth.idToken,
+        email: googleUser.email,
+        displayName: googleUser.displayName,
+        photoUrl: googleUser.photoUrl,
+        id: googleUser.id,
       );
-    } on FirebaseAuthException catch (e) {
-      throw firebaseAuthExceptionConvertToReadableError(e);
-    }
-  }
-
-  Future<String> resetPassword(String email) async {
-    try {
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
-      return '';
-    } on FirebaseAuthException catch (e) {
-      return firebaseAuthExceptionConvertToReadableError(e);
-    }
-  }
-
-  /// Starts the Sign In with Google Flow.
-  ///
-  /// Throws a [LogInWithGoogleFailure] if an exception occurs.
-  Future<UserCredential> logInWithGoogle() async {
-    try {
-      if (kIsWeb) {
-        GoogleAuthProvider authProvider = GoogleAuthProvider();
-        return await FirebaseAuth.instance.signInWithPopup(authProvider);
-      } else {
-        final googleUser = await _googleSignIn.authenticate();
-        final googleAuth = googleUser.authentication;
-        final credential = firebase_auth.GoogleAuthProvider.credential(
-          idToken: googleAuth.idToken,
-        );
-        return await _firebaseAuth.signInWithCredential(credential);
-      }
-    } on FirebaseAuthException catch (e) {
-      throw Exception(_showGoogleLoginFailure(e.code));
-    }
-  }
-
-  /// Signs in with the provided [email] and [password].
-  ///
-  /// Throws a [LogInWithEmailAndPasswordFailure] if an exception occurs.
-  Future<UserCredential?> logInWithEmailAndPassword(LoginInfo info) async {
-    if (info.email != null && info.password != null) {
-      try {
-        UserCredential uc = await _firebaseAuth.signInWithEmailAndPassword(
-            email: info.email!, password: info.password!);
-        return uc;
-      } on FirebaseAuthException catch (e) {
-        throw firebaseAuthExceptionConvertToReadableError(e);
-      }
-    }
-  }
-
-  // Future<UserCredential?> logWithPhone(String phone) async {
-
-  //     try {
-  //      _firebaseAuth.verifyPhoneNumber(
-  // phoneNumber: phone,
-  // verificationCompleted: (PhoneAuthCredential credential) {
-  //   return credential.;
-  // },
-  // verificationFailed: (FirebaseAuthException e) {
-  //   throw firebaseAuthExceptionConvertToReadableError(e);
-  // },
-  // codeSent: (String verificationId, int? resendToken) {},
-  // codeAutoRetrievalTimeout: (String verificationId) {});
-  //     } on FirebaseAuthException catch (e) {
-  //       throw firebaseAuthExceptionConvertToReadableError(e);
-  //     }
-  //   }
-
-  /// Signs out the current user which will emit
-  /// [User.empty] from the [user] Stream.
-  ///
-  /// Throws a [LogOutFailure] if an exception occurs.
-  Future<void> logOut() async {
-    try {
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
-    } on Exception {
-      throw LogOutFailure();
-    }
-  }
-
-  Future<bool> isAuthenticated() async {
-    final currentUser = _firebaseAuth.currentUser;
-    return currentUser != null;
-  }
-
-  Future<void> authenticate(LoginInfo logininfo) async {
-    if (logininfo.email != null) {
-      try {
-        logInWithEmailAndPassword(
-            LoginInfo(email: logininfo.email, password: logininfo.password));
-      } on FirebaseAuthException catch (e) {
-        throw firebaseAuthExceptionConvertToReadableError(e);
-      }
-    }
-
-    //return _firebaseAuth.signInAnonymously();
-  }
-
-  Future<String?> getUserId() async {
-    return _firebaseAuth.currentUser?.uid;
-  }
-
-  String _showGoogleLoginFailure(String error) {
-    switch (error) {
-      case 'sign_in_failed':
-        return "Google sign In failed";
-      default:
-        return "Google sign In failed";
-    }
-  }
-
-  Future deleteAuthUser(String email, String password) async {
-    try {
-      firebase_auth.User? user = await _firebaseAuth.currentUser;
-      AuthCredential credentials = firebase_auth.EmailAuthProvider.credential(
-          email: email, password: password);
-
-      firebase_auth.UserCredential? result =
-          await _firebaseAuth.signInWithCredential(credentials);
-      if (result.user != null) await result.user!.delete();
-      return true;
     } catch (e) {
-      print(e.toString());
+      if (e is GoogleSignInFailure) {
+        rethrow;
+      }
+      throw GoogleSignInFailure('Google Sign-In failed: ${e.toString()}');
+    }
+  }
+
+  /// Signs in with Apple and returns Apple OAuth data
+  ///
+  /// Throws an [AppleSignInFailure] if an exception occurs.
+  Future<AppleOAuthResult> signInWithApple() async {
+    try {
+      // Convert string scopes to Apple ID authorization scopes
+      final appleScopes = <AppleIDAuthorizationScopes>[];
+      final scopesToUse = _appleConfig.scopes;
+
+      for (String scope in scopesToUse) {
+        switch (scope.toLowerCase()) {
+          case 'email':
+            appleScopes.add(AppleIDAuthorizationScopes.email);
+            break;
+          case 'fullname':
+          case 'full_name':
+          case 'name':
+            appleScopes.add(AppleIDAuthorizationScopes.fullName);
+            break;
+        }
+      }
+
+      // Default scopes if none provided
+      if (appleScopes.isEmpty) {
+        appleScopes.addAll([
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ]);
+      }
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: appleScopes,
+      );
+
+      return AppleOAuthResult(
+          authorizationCode: credential.authorizationCode,
+          identityToken: credential.identityToken,
+          email: credential.email,
+          givenName: credential.givenName,
+          familyName: credential.familyName,
+          userIdentifier: credential.userIdentifier ?? '');
+    } catch (e) {
+      throw AppleSignInFailure('Apple Sign-In failed: ${e.toString()}');
+    }
+  }
+
+  /// Signs out from Google
+  Future<void> signOutGoogle() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (e) {
+      throw GoogleSignInFailure('Google Sign-Out failed: ${e.toString()}');
+    }
+  }
+
+  /// Checks if user is currently signed in with Google
+  /// This is a simplified check - for production use, you should use authentication events
+  Future<bool> isGoogleSignedIn() async {
+    try {
+      final account = await _googleSignIn.attemptLightweightAuthentication();
+      return account != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Attempts to get current Google user with lightweight authentication
+  Future<GoogleSignInAccount?> getCurrentGoogleUser() async {
+    try {
+      return await _googleSignIn.attemptLightweightAuthentication();
+    } catch (e) {
       return null;
     }
-  }
-
-  Future<void> deleteCurrentUser() async {
-    if (_firebaseAuth.currentUser != null)
-      return _firebaseAuth.currentUser!.delete();
-  }
-
-  String firebaseAuthExceptionConvertToReadableError(
-      FirebaseAuthException error) {
-    if (!isEmpty(error.code)) {
-      switch (error.code) {
-        case 'network-request-failed':
-          return 'Please check your network';
-        case 'user-not-found':
-          return 'Email was not found. Check your email and try again';
-        case 'wrong-password':
-          return 'Wrong password';
-        case 'email-already-exists':
-          return 'Email already exists';
-        case 'invalid-phone-number':
-        case 'phone-number-already-exists':
-        default:
-          return 'General Authentication Error';
-      }
-    }
-    return "General Authentication Error";
   }
 }

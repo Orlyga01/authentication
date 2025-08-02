@@ -1,17 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 import 'dart:async';
 import 'dart:math';
 import 'package:authentication/authentication.dart';
-import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
+import 'package:authentication/authenticate/models/oauth_models.dart';
 import 'package:crypto/crypto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthenticationNotifier extends StateNotifier<AuthenticationState> {
   AuthenticationNotifier() : super(Uninitialized());
@@ -88,7 +82,7 @@ class AuthenticationController {
   static final AuthenticationController _groupC =
       new AuthenticationController._internal();
   AuthenticationController._internal();
-  FirebaseAuthRepository _authRepository = FirebaseAuthRepository();
+  // Repository will be created dynamically with provided configuration
 
   factory AuthenticationController() {
     return _groupC;
@@ -97,41 +91,23 @@ class AuthenticationController {
   bool get fromApple => _fromApple;
   Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
       [bool fromRegister = false, bool authByPhone = false]) async {
-    UserCredential? userc;
-    //That means
+    // This method is now for email/password authentication only
+    // Since we removed Firebase, this would need to be handled by your external system
     try {
-      if (fromRegister)
-        userc = await _authRepository.signUp(logininfo);
-      else {
-        // String? phone = logininfo.phone ?? logininfo.user?.phone;
-        // if (phone != null && authByPhone)
-        //   userc = await _authRepository.loginByPhone(phone);
-        userc = await _authRepository.logInWithEmailAndPassword(logininfo);
-      }
-      logininfo.uid = userc!.user!.uid;
-      //If its the same user as before login
-      if (isDifferentLoginUser(userc))
-        await UserLocalStorage()
-            .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
-      await UserLocalStorage().setKeyValue("loggedOut", "false");
-      return Authenticated(userc.user!, logininfo);
+      // You would implement your own email/password authentication here
+      // For now, return an error indicating this needs to be implemented
+      return AuthenticationFailed(
+          "Email/password authentication not implemented - handle via your external system",
+          logininfo);
     } catch (e) {
       return AuthenticationFailed(e.toString(), logininfo);
     }
   }
 
-  bool isDifferentLoginUser(UserCredential userc) {
+  bool isDifferentLoginUser(String newUserId) {
     LoginInfo oldLogin = UserLocalStorage().getLoginData();
     //If its the same user as before login
-    return oldLogin.uid != userc.user!.uid;
-  }
-
-  deleteCurrentUser() {
-    _authRepository.deleteCurrentUser();
-  }
-
-  Future<void> deleteAuthUser(String email, String password) async {
-    return _authRepository.deleteAuthUser(email, password);
+    return oldLogin.uid != newUserId;
   }
 
   String generateNonce([int length = 32]) {
@@ -151,86 +127,69 @@ class AuthenticationController {
 
   Future<AuthenticationState> appleLogin() async {
     try {
-      OAuthCredential oAuthCredential = await signInWithApple();
+      // Create repository - configuration comes from AuthConfig
+      final repository = OAuthAuthRepository();
+      final appleResult = await repository.signInWithApple();
 
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
-      if (userCredential != null) {
-        final loginInfo =
-            convertUserCredentialsToLoginInfo(userCredential, true);
-        loginInfo.loginType = "apple";
-        return Authenticated(userCredential.user!, loginInfo);
-      } else {
-        return AuthenticationFailed("Apple Login failed");
+      final loginInfo = convertAppleOAuthToLoginInfo(appleResult);
+      loginInfo.loginType = "apple";
+
+      // Save to local storage if needed
+      if (isDifferentLoginUser(appleResult.userIdentifier)) {
+        await UserLocalStorage().setLoginData(loginInfo);
       }
+      await UserLocalStorage().setKeyValue("loggedOut", "false");
+
+      return Authenticated(null, loginInfo); // No Firebase user, just LoginInfo
     } catch (e) {
       return AuthenticationFailed(e.toString());
     }
   }
 
-  Future<OAuthCredential> signInWithApple() async {
-    // To prevent replay attacks with the credential returned from Apple, we
-    // include a nonce in the credential request. When signing in with
-    // Firebase, the nonce in the id token returned by Apple, is expected to
-    // match the sha256 hash of `rawNonce`.
-    final rawNonce = generateNonce();
-    final nonce = sha256ofString(rawNonce);
-
-    // Request credential for the currently signed in Apple account.
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: nonce,
-    );
-
-    // Create an `OAuthCredential` from the credential returned by Apple.
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
-
-    return oauthCredential;
-  }
-
-  LoginInfo convertUserCredentialsToLoginInfo(
-      UserCredential userc, bool exteranLogin) {
+  LoginInfo convertAppleOAuthToLoginInfo(AppleOAuthResult appleResult) {
     return LoginInfo(
-      email: userc.user!.email,
-      uid: userc.user!.uid,
-      name: userc.user!.displayName,
-      phone: userc.user!.phoneNumber,
-      externalLogin: exteranLogin,
+      email: appleResult.email,
+      uid: appleResult.userIdentifier,
+      name: appleResult.displayName,
+      externalLogin: true,
     );
   }
 
-  Future<void> afterExternalLogin(UserCredential userc) async {
-    String? personid;
+  LoginInfo convertGoogleOAuthToLoginInfo(GoogleOAuthResult googleResult) {
+    return LoginInfo(
+      email: googleResult.email,
+      uid: googleResult.id,
+      name: googleResult.displayName,
+      externalLogin: true,
+    );
+  }
+
+  Future<void> afterExternalLogin(LoginInfo loginInfo) async {
     //check if user exists in the app
 
-    await UserLocalStorage()
-        .setLoginData(convertUserCredentialsToLoginInfo(userc, true));
-
+    await UserLocalStorage().setLoginData(loginInfo);
     UserLocalStorage().setKeyValue("loggedOut", "false");
   }
 
   Future<AuthenticationState> googleLogin(
       {bool saveToLocalStorage = true}) async {
-    String? personid;
     try {
-      UserCredential userc = await _authRepository.logInWithGoogle();
-      if (userc != null) {
-        final loginInfo = convertUserCredentialsToLoginInfo(userc, true);
-        loginInfo.loginType = "google";
-        return Authenticated(userc.user!, loginInfo);
-        // } else if (saveToLocalStorage) {
-        //   await afterExternalLogin(userc);
-        // }
-        // return Authenticated(userc.user!, null);
-      } else {
-        return AuthenticationFailed("Google Login failed", null);
+      // Create repository - configuration comes from AuthConfig
+      final repository = OAuthAuthRepository();
+      final googleResult = await repository.signInWithGoogle();
+
+      final loginInfo = convertGoogleOAuthToLoginInfo(googleResult);
+      loginInfo.loginType = "google";
+
+      if (saveToLocalStorage) {
+        // Save to local storage if needed
+        if (isDifferentLoginUser(googleResult.id)) {
+          await UserLocalStorage().setLoginData(loginInfo);
+        }
+        await UserLocalStorage().setKeyValue("loggedOut", "false");
       }
+
+      return Authenticated(null, loginInfo); // No Firebase user, just LoginInfo
     } catch (e) {
       return AuthenticationFailed(e.toString(), null);
     }
@@ -241,6 +200,7 @@ class AuthenticationController {
   }
 
   Future<String> sendResetPassword(email) async {
-    return _authRepository.resetPassword(email);
+    // Password reset would need to be handled by your external system
+    return "Password reset not implemented - handle via your external system";
   }
 }

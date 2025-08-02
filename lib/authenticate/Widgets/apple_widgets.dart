@@ -1,12 +1,10 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:authentication/authenticate/providers/authentication_state.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/user/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppleLoginButton extends StatelessWidget {
   final bool outlined;
