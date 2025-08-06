@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:authentication/shared/import_shared.dart';
 
@@ -8,6 +9,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 //import 'package:mobile_number/mobile_number.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+// Google OAuth configuration - to be set by the consuming app
+class GoogleSignInConfig {
+  static String? androidClientId;
+  static String? iosClientId;
+  static String? webClientId;
+  static String? serverClientId; // For backend authentication
+
+  static void configure({
+    String? androidClientId,
+    String? iosClientId,
+    String? webClientId,
+    String? serverClientId, // Usually the web client ID for backend auth
+  }) {
+    GoogleSignInConfig.androidClientId = androidClientId;
+    GoogleSignInConfig.iosClientId = iosClientId;
+    GoogleSignInConfig.webClientId = webClientId;
+    GoogleSignInConfig.serverClientId = serverClientId;
+  }
+}
 
 class SignUpFailure implements Exception {}
 
@@ -19,10 +40,68 @@ class FirebaseAuthRepository {
   /// {@macro authentication_repository}
   FirebaseAuthRepository({
     firebase_auth.FirebaseAuth? firebaseAuth,
-  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
-  
+  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance {
+    _initializeGoogleSignIn();
+  }
+
   final firebase_auth.FirebaseAuth _firebaseAuth;
-  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  late final GoogleSignIn _googleSignIn;
+
+  /// Initialize Google Sign-In with the 7.x API
+  void _initializeGoogleSignIn() {
+    print('🔍 [GoogleSignIn Debug] Starting initialization...');
+    print('🔍 [GoogleSignIn Debug] Platform.isAndroid: ${Platform.isAndroid}');
+    print('🔍 [GoogleSignIn Debug] kIsWeb: $kIsWeb');
+
+    // Get the GoogleSignIn instance
+    _googleSignIn = GoogleSignIn.instance;
+    print('🔍 [GoogleSignIn Debug] Got GoogleSignIn.instance');
+
+    // Configure client IDs based on platform using keys.dart values
+    String? clientId;
+    String? serverClientId;
+
+    if (Platform.isAndroid) {
+      // For Android: use the explicit serverClientId (required for v7.1.1+)
+      serverClientId = GoogleSignInConfig.serverClientId;
+      print(
+          '🔍 [GoogleSignIn Debug] Android - using serverClientId: $serverClientId');
+    } else if (Platform.isIOS) {
+      // For iOS: clientId should be the iOS client ID
+      clientId = GoogleSignInConfig.iosClientId;
+      // iOS can also use serverClientId for backend authentication if needed
+      serverClientId = GoogleSignInConfig.serverClientId;
+      print(
+          '🔍 [GoogleSignIn Debug] iOS - using clientId: $clientId, serverClientId: $serverClientId');
+    } else if (kIsWeb) {
+      // For Web: clientId should be the web client ID
+      clientId = GoogleSignInConfig.webClientId;
+      // Web can also use serverClientId for backend authentication if needed
+      serverClientId = GoogleSignInConfig.serverClientId;
+      print(
+          '🔍 [GoogleSignIn Debug] Web - using clientId: $clientId, serverClientId: $serverClientId');
+    }
+
+    print('🔍 [GoogleSignIn Debug] Final configuration:');
+    print('🔍 [GoogleSignIn Debug] - clientId: $clientId');
+    print('🔍 [GoogleSignIn Debug] - serverClientId: $serverClientId');
+    print('🔍 [GoogleSignIn Debug] Calling _googleSignIn.initialize()...');
+
+    // Initialize Google Sign-In with proper configuration
+    _googleSignIn
+        .initialize(
+      clientId: clientId,
+      serverClientId: serverClientId,
+    )
+        .then((_) {
+      print(
+          '✅ [GoogleSignIn Debug] GoogleSignIn.initialize() completed successfully');
+    }).catchError((error) {
+      print(
+          '❌ [GoogleSignIn Debug] Google Sign-In initialization failed: $error');
+      print('❌ [GoogleSignIn Debug] Error type: ${error.runtimeType}');
+    });
+  }
 
   /// Stream of [User] which will emit the current user when
   /// the authentication state changes.
@@ -58,7 +137,7 @@ class FirebaseAuthRepository {
     }
   }
 
-  /// Starts the Sign In with Google Flow.
+  /// Starts the Sign In with Google Flow using 7.x API.
   ///
   /// Throws a [LogInWithGoogleFailure] if an exception occurs.
   Future<UserCredential> logInWithGoogle() async {
@@ -67,15 +146,27 @@ class FirebaseAuthRepository {
         GoogleAuthProvider authProvider = GoogleAuthProvider();
         return await FirebaseAuth.instance.signInWithPopup(authProvider);
       } else {
+        // Use the new 7.x API
         final googleUser = await _googleSignIn.authenticate();
+
         final googleAuth = googleUser.authentication;
+
+        // Get authorization for Firebase integration
+        final authorization =
+            await googleUser.authorizationClient.authorizeScopes(['email']);
+
         final credential = firebase_auth.GoogleAuthProvider.credential(
+          accessToken: authorization.accessToken,
           idToken: googleAuth.idToken,
         );
         return await _firebaseAuth.signInWithCredential(credential);
       }
+    } on GoogleSignInException catch (e) {
+      throw Exception(_showGoogleLoginFailure(e.code.toString()));
     } on FirebaseAuthException catch (e) {
       throw Exception(_showGoogleLoginFailure(e.code));
+    } catch (e) {
+      throw Exception('Google Sign-In failed: $e');
     }
   }
 
@@ -92,6 +183,7 @@ class FirebaseAuthRepository {
         throw firebaseAuthExceptionConvertToReadableError(e);
       }
     }
+    return null; // Return null if email or password is null
   }
 
   // Future<UserCredential?> logWithPhone(String phone) async {
@@ -120,7 +212,8 @@ class FirebaseAuthRepository {
     try {
       await Future.wait([
         _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
+        _googleSignIn
+            .disconnect(), // Use disconnect() for complete sign out in 7.x
       ]);
     } on Exception {
       throw LogOutFailure();
@@ -160,7 +253,6 @@ class FirebaseAuthRepository {
 
   Future deleteAuthUser(String email, String password) async {
     try {
-      firebase_auth.User? user = await _firebaseAuth.currentUser;
       AuthCredential credentials = firebase_auth.EmailAuthProvider.credential(
           email: email, password: password);
 
