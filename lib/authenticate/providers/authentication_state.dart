@@ -1,5 +1,5 @@
 import 'package:authentication/user/models/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:authentication/authenticate/models/auth_result.dart';
 import 'import_auth.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -14,7 +14,7 @@ abstract class AuthenticationState extends Equatable {
 class Uninitialized extends AuthenticationState {}
 
 class Authenticated extends AuthenticationState {
-  final User? user;
+  final SimpleUser? user;
   final LoginInfo? logininfo;
   
 

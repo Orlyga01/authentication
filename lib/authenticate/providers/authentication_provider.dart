@@ -6,8 +6,9 @@ import 'dart:math';
 import 'package:authentication/authentication.dart';
 import 'package:authentication/shared/common_auth_functions.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
+import 'package:authentication/authenticate/models/auth_result.dart';
+import 'package:authentication/authenticate/providers/local_auth_repository.dart';
 import 'package:crypto/crypto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -88,16 +89,32 @@ class AuthenticationController {
   static final AuthenticationController _groupC =
       new AuthenticationController._internal();
   AuthenticationController._internal();
-  FirebaseAuthRepository _authRepository = FirebaseAuthRepository();
+  LocalAuthRepository _authRepository = LocalAuthRepository();
 
   factory AuthenticationController() {
     return _groupC;
   }
   bool _fromApple = false;
   bool get fromApple => _fromApple;
+
+  /// Generates a UUID for new users
+  String _generateUserId() {
+    var uuid = '';
+    var random = Random();
+    var chars = '0123456789abcdef';
+    
+    for (int i = 0; i < 32; i++) {
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += '-';
+      }
+      uuid += chars[random.nextInt(chars.length)];
+    }
+    return uuid;
+  }
+
   Future<AuthenticationState> checkCredentials(LoginInfo logininfo,
       [bool fromRegister = false, bool authByPhone = false]) async {
-    UserCredential? userc;
+    AuthResult? userc;
     //That means
     try {
       if (fromRegister)
@@ -108,22 +125,22 @@ class AuthenticationController {
         //   userc = await _authRepository.loginByPhone(phone);
         userc = await _authRepository.logInWithEmailAndPassword(logininfo);
       }
-      logininfo.uid = userc!.user!.uid;
+      logininfo.uid = userc!.user.uid;
       //If its the same user as before login
       if (isDifferentLoginUser(userc))
         await UserLocalStorage()
             .setLoginData(convertUserCredentialsToLoginInfo(userc, false));
       await UserLocalStorage().setKeyValue("loggedOut", "false");
-      return Authenticated(userc.user!, logininfo);
+      return Authenticated(userc.user, logininfo);
     } catch (e) {
       return AuthenticationFailed(e.toString(), logininfo);
     }
   }
 
-  bool isDifferentLoginUser(UserCredential userc) {
+  bool isDifferentLoginUser(AuthResult userc) {
     LoginInfo oldLogin = UserLocalStorage().getLoginData();
     //If its the same user as before login
-    return oldLogin.uid != userc.user!.uid;
+    return oldLogin.uid != userc.user.uid;
   }
 
   deleteCurrentUser() {
@@ -151,27 +168,31 @@ class AuthenticationController {
 
   Future<AuthenticationState> appleLogin() async {
     try {
-      OAuthCredential oAuthCredential = await signInWithApple();
+      final appleCredential = await signInWithApple();
 
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
-      if (userCredential != null) {
-        final loginInfo =
-            convertUserCredentialsToLoginInfo(userCredential, true);
-        loginInfo.loginType = "apple";
-        return Authenticated(userCredential.user!, loginInfo);
-      } else {
-        return AuthenticationFailed("Apple Login failed");
-      }
+      // Generate a local user ID for the Apple user
+      final userId = _generateUserId();
+      
+      final authResult = AuthResult(
+        uid: userId,
+        email: appleCredential.email,
+        displayName: appleCredential.givenName != null && appleCredential.familyName != null 
+            ? '${appleCredential.givenName} ${appleCredential.familyName}' 
+            : null,
+      );
+      
+      final loginInfo = convertUserCredentialsToLoginInfo(authResult, true);
+      loginInfo.loginType = "apple";
+      return Authenticated(authResult.user, loginInfo);
     } catch (e) {
-      return AuthenticationFailed(e.toString());
+      return AuthenticationFailed("Apple sign-in failed: "+e.toString());
     }
   }
 
-  Future<OAuthCredential> signInWithApple() async {
+  Future<AuthorizationCredentialAppleID> signInWithApple() async {
     // To prevent replay attacks with the credential returned from Apple, we
     // include a nonce in the credential request. When signing in with
-    // Firebase, the nonce in the id token returned by Apple, is expected to
+    // a nonce in the id token returned by Apple, is expected to
     // match the sha256 hash of `rawNonce`.
     final rawNonce = generateNonce();
     final nonce = sha256ofString(rawNonce);
@@ -185,27 +206,21 @@ class AuthenticationController {
       nonce: nonce,
     );
 
-    // Create an `OAuthCredential` from the credential returned by Apple.
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
-
-    return oauthCredential;
+    return appleCredential;
   }
 
   LoginInfo convertUserCredentialsToLoginInfo(
-      UserCredential userc, bool exteranLogin) {
+      AuthResult userc, bool exteranLogin) {
     return LoginInfo(
-      email: userc.user!.email,
-      uid: userc.user!.uid,
-      name: userc.user!.displayName,
-      phone: userc.user!.phoneNumber,
+      email: userc.user.email,
+      uid: userc.user.uid,
+      name: userc.user.displayName,
+      phone: userc.user.phoneNumber,
       externalLogin: exteranLogin,
     );
   }
 
-  Future<void> afterExternalLogin(UserCredential userc) async {
+  Future<void> afterExternalLogin(AuthResult userc) async {
     String? personid;
     //check if user exists in the app
 
@@ -219,20 +234,20 @@ class AuthenticationController {
       {bool saveToLocalStorage = true}) async {
     String? personid;
     try {
-      UserCredential userc = await _authRepository.logInWithGoogle();
+      AuthResult userc = await _authRepository.logInWithGoogle();
       if (userc != null) {
         final loginInfo = convertUserCredentialsToLoginInfo(userc, true);
         loginInfo.loginType = "google";
-        return Authenticated(userc.user!, loginInfo);
+        return Authenticated(userc.user, loginInfo);
         // } else if (saveToLocalStorage) {
         //   await afterExternalLogin(userc);
         // }
         // return Authenticated(userc.user!, null);
       } else {
-        return AuthenticationFailed("Google Login failed", null);
+        return AuthenticationFailed("Google sign-in failed", null);
       }
     } catch (e) {
-      return AuthenticationFailed(e.toString(), null);
+      return AuthenticationFailed("Google sign-in failed: "+e.toString(), null);
     }
   }
 

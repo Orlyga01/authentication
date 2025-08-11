@@ -5,9 +5,8 @@ import 'dart:developer';
 import 'package:authentication/authenticate/providers/import_auth.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:authentication/shared/import_shared.dart';
-import 'package:authentication/shared/locator.dart';
 import 'package:authentication/user/providers/import_user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:authentication/authenticate/models/auth_result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //var authNotifierProviderForUser;
@@ -22,7 +21,7 @@ final userNotifier = StateNotifierProvider<UserNotifier, UserState>((ref) {
 });
 
 class UserNotifier extends StateNotifier<UserState> {
-  Ref os;
+  final Ref os;
   late var authState;
   //!!!! changes done here
   UserNotifier(this.os) : super(UserLoading()) {
@@ -62,7 +61,7 @@ class UserNotifier extends StateNotifier<UserState> {
     return (lo == '' || lo == "true");
   }
 
-  setUserAfterAuthentication(User? muser, LoginInfo? logininfo) async {
+  setUserAfterAuthentication(SimpleUser? muser, LoginInfo? logininfo) async {
     try {
       UserState newState =
           await UserController().setUserAfterAuthentication(muser, logininfo);
@@ -113,8 +112,7 @@ class UserController {
   UserController._internal();
   AuthUser _user = AuthUser.empty;
   bool _isLoggedIn = false;
-  FirebaseUserRepository _userRepository =
-      authUserlocator.get<FirebaseUserRepository>();
+  // Repository removed - user persistence should be handled by your main app
   Map<String, dynamic>? _loginSettings;
   factory UserController() {
     return _userC;
@@ -128,25 +126,14 @@ class UserController {
       [bool checkByPhone = false,
       bool checkByEmail = false,
       bool checkAll = true]) async {
-    AuthUser? foundUser;
-    if (checkAll) {
-      checkByPhone = true;
-      checkByEmail = true;
-    }
-    String userid = UserController().userid;
-    if (!isEmpty(checkuser.phone) && checkByPhone)
-      foundUser =
-          await _userRepository.getUserByField("phone", checkuser.phone);
-    if (foundUser != null && foundUser.id != userid) return foundUser;
-    if (!isEmpty(checkuser.email) && checkByEmail)
-      foundUser =
-          await _userRepository.getUserByField("email", checkuser.email);
-    if (foundUser != null && foundUser.id != userid) return foundUser;
+    // User existence checks should be implemented in your main app
+    // This package only handles authentication, not user storage
+    return null;
   }
 
   Future<UserState> setUserAfterAuthentication(
       //REMOVE Afgter IOS
-      User? authUser,
+      SimpleUser? authUser,
       LoginInfo? loginInfo) async {
     try {
       AuthUser? user = UserLocalStorage().getAuthUser();
@@ -236,7 +223,9 @@ class UserController {
 
   bool get fromApple => _user.email!.indexOf('leid.com') > -1;
   Future<AuthUser?> getUserById(String id) async {
-    return _userRepository.get(id);
+    // User retrieval should be implemented in your main app
+    // This package only handles authentication, not user storage
+    return null;
   }
 
   bool get isUserLoggedIn {
@@ -253,12 +242,10 @@ class UserController {
   }
 
   Future<AuthUser?> addUser(AuthUser user) async {
-    try {
-      await _userRepository.add(user);
-      return user;
-    } catch (e) {
-      throw e.toString();
-    }
+    // User creation should be handled in your main app
+    // This package only handles authentication, not user storage
+    // Return the user as-is for compatibility
+    return user;
   }
 
   Future<void> resetUser() async {
@@ -272,12 +259,14 @@ class UserController {
   // }
 
   // Future<AuthUser?> getUserByPersonID(String personid) async {
-  //   return _userRepository.getUserByField("personId", personid);
+  //   return null; // Repository removed
   // }
 
   Future<void> updateUser(String id,
       [AuthUser? user, String? fieldName, dynamic? fieldValue]) async {
-    await _userRepository.update(id, user, fieldName, fieldValue);
+    // User updates should be handled in your main app
+    // This package only handles authentication, not user storage
+    
     //The current user was changed, then we need to update the global _user
     if (id == userid) {
       if (fieldName != null) {
@@ -294,7 +283,9 @@ class UserController {
   }
 
   Future<List<AuthUser>> getUsersByListOfIds(List<String> usersList) async {
-    return await _userRepository.getUsersByListOfIds(usersList);
+    // User retrieval should be handled in your main app
+    // This package only handles authentication, not user storage
+    return [];
   }
 
   Future<List<String>> getUserPlayerIds(userid) async {
@@ -322,6 +313,8 @@ class UserController {
   }
 
   Future<void> delete(id) async {
-    return _userRepository.delete(getUser.id);
+    // User deletion should be handled in your main app
+    // This package only handles authentication, not user storage
+    return;
   }
 }

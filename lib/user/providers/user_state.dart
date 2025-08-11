@@ -1,7 +1,7 @@
 import 'package:authentication/authenticate/models/login.dart';
 import 'package:authentication/user/models/user.dart';
+import 'package:authentication/authenticate/models/auth_result.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class UserState extends Equatable {
   const UserState();
@@ -11,7 +11,7 @@ abstract class UserState extends Equatable {
 }
 
 class SetUserAfterAuthentication extends UserState {
-  final User user;
+  final SimpleUser user;
 
   const SetUserAfterAuthentication(this.user);
 
