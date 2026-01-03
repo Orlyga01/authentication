@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:authentication/shared/import_shared.dart';
 import 'package:authentication/shared/helpers/secureStorage.dart';
 import 'package:authentication/authenticate/models/auth_result.dart';
+import 'package:authentication/authenticate/providers/authentication_repository.dart';
 import 'import_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -25,6 +27,26 @@ class LocalAuthRepository {
   LocalAuthRepository();
   
   late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _googleSignInInitialized = false;
+  
+  // Static configuration values to be set by the consuming app
+  static String? _androidClientId;
+  static String? _iosClientId;
+  static String? _webClientId;
+  static String? _serverClientId;
+  
+  /// Configure OAuth client IDs before using Google Sign-In
+  static void configureGoogleSignIn({
+    required String androidClientId,
+    required String iosClientId,
+    required String webClientId,
+    required String serverClientId,
+  }) {
+    _androidClientId = androidClientId;
+    _iosClientId = iosClientId;
+    _webClientId = webClientId;
+    _serverClientId = serverClientId;
+  }
 
   /// Generates a UUID for new users
   String _generateUserId() {
@@ -80,9 +102,48 @@ class LocalAuthRepository {
     }
   }
 
+  /// Initialize Google Sign-In lazily (only when first used)
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (_googleSignInInitialized) return;
+    
+    // First, configure GoogleSignInConfig with the values provided by the app
+    GoogleSignInConfig.configure(
+      androidClientId: _androidClientId,
+      iosClientId: _iosClientId,
+      webClientId: _webClientId,
+      serverClientId: _serverClientId,
+    );
+    
+    // Then determine which values to use based on platform
+    String? clientId;
+    String? serverClientId;
+    
+    if (!kIsWeb && Platform.isAndroid) {
+      // For Android: use serverClientId (required for v7.1.1+)
+      serverClientId = _serverClientId;
+    } else if (!kIsWeb && Platform.isIOS) {
+      // For iOS: use both clientId and serverClientId
+      clientId = _iosClientId;
+      serverClientId = _serverClientId;
+    } else if (kIsWeb) {
+      // For Web: use webClientId
+      clientId = _webClientId;
+    }
+    
+    await _googleSignIn.initialize(
+      clientId: clientId,
+      serverClientId: serverClientId,
+    );
+    
+    _googleSignInInitialized = true;
+  }
+
   /// Starts the Sign In with Google Flow without Firebase
   Future<AuthResult> logInWithGoogle() async {
     try {
+      // Ensure Google Sign-In is initialized before using it
+      await _ensureGoogleSignInInitialized();
+      
       final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
       
       if (googleUser == null) {
